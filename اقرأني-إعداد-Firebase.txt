@@ -1,0 +1,8 @@
+خطوات إعداد Firebase (مرة واحدة فقط) - مشروع ibrahim-38a8f
+
+1) Authentication -> Sign-in method -> فعّل Email/Password.
+2) Firestore Database -> Create database (اختر أقرب منطقة) ثم افتح تبويب Rules وألصق محتوى ملف firestore.rules واضغط Publish.
+3) Authentication -> Settings -> Authorized domains -> Add domain: ضع نطاق موقعك على Netlify (مثال: your-site.netlify.app).
+4) ارفع المجلد (الذي فيه index.html و assets) على Netlify Drop.
+
+ملاحظات: ملف firestore.rules وهذا الملف داخل المجلد للمراجعة فقط ولا يؤثران على التطبيق.
