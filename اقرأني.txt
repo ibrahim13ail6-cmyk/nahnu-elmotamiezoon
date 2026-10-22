@@ -1,0 +1,33 @@
+منصة الفرقة الأولى – كلية الزراعة (نسخة متعددة الصفحات)
+
+طريقة الرفع (مرة واحدة):
+1) افتح مستودع GitHub وارفع كل محتويات هذا المجلد كما هي (index.html وباقي صفحات html ومجلدات css و js و assets وملف firestore.rules). اسمح باستبدال الملفات القديمة.
+   مهم: ارفع المجلدات نفسها، ولا ترفع ملف الزيب.
+2) Vercel سيتحدث تلقائيا بعد الرفع (لا يحتاج أي إعدادات إضافية لأن الموقع ثابت).
+3) في Firebase:
+   - Authentication > Settings > Authorized domains: أضف دومين Vercel (مثال: اسم-مشروعك.vercel.app).
+   - Firestore Database > Rules: انسخ محتوى firestore.rules والصقه ثم Publish (فيه قاعدة لوحة الأوائل).
+
+صفحات المنصة:
+index.html        الرئيسية (تسجيل الدخول + اختيار المادة)
+economics.html    اقتصاد
+computer.html     حاسب آلي
+animal.html       حيوان زراعي
+math.html         رياضة عامة (المحاضرات 1-5 + الاختبارات)
+botany.html       نبات
+chemistry.html    الكيمياء
+crops.html        محاصيل (ملخصات + خرائط ذهنية + صور + اختبارات)
+leaderboard.html  لوحة الأوائل ونقاطي
+planner.html      تنظيم الوقت
+timer.html        مؤقت المذاكرة والإنجازات
+
+الملفات المشتركة:
+css/style.css     التصميم
+js/core.js        الكود الأساسي وبيانات المواد (Firebase + الاختبارات + ملفات المحاضرات)
+js/crops.js       بيانات قسم المحاصيل
+js/math.js        بيانات قسم الرياضة
+js/leaderboard.js النقاط ولوحة الأوائل
+js/pages.js       الربط بين الصفحات
+assets/           صور المحاضرات (assets/crops صور الآلات الزراعية)
+
+عند تعديل أي ملف: ارفع الملف المتغير فقط وسيتحدث الموقع.
