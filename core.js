@@ -138,15 +138,23 @@ async function save(filename,data){
 function quizList(s){
  const qs=QUIZZES[s];
  if(!qs){page(`<h2>📝 الاختبارات – ${esc(s)}</h2><div class="empty">لا توجد اختبارات لهذه المادة بعد.</div>`,()=>subject(s));return}
- page(`<h2>📝 الاختبارات – ${esc(s)}</h2><div class="list">${qs.map(q=>`<button class="opt">${q[0]}<small>${q[3]||q[1].length} سؤال</small></button>`).join("")}</div>`,()=>subject(s));
+ page(`<h2>📝 الاختبارات – ${esc(s)}</h2><div class="list">${qs.map(q=>`<button class="opt">${q[0]}<small>${q[3]||q[1].length} سؤال${q[4]?" · ⏱ "+Math.round(q[4]/60)+" د":""}</small></button>`).join("")}</div>`,()=>subject(s));
  btns(qs,"opt",q=>quiz(s,q));
 }
+let QTOK=null;
 function quiz(s,qz){
  const bank=qz[2]||MCQ;let ids=qz[1].slice();if(qz[3]){ids.sort(()=>Math.random()-.5);ids=ids.slice(0,qz[3])}
  const items=ids.map(i=>{const m=bank[i],o=m.slice(1).map((x,j)=>[x,j===0]).sort(()=>Math.random()-.5);return{q:m[0],o}});
  const ans=items.map(()=>-1),fl=items.map(()=>false);let cur=0;
+ const secs=qz[4]||0,t0=Date.now(),tok={};QTOK=tok;let left=secs,fin=false,iv=0;
+ const fmtT=t=>Math.floor(t/60)+":"+String(t%60).padStart(2,"0");
+ const finish=()=>{if(fin)return;fin=true;clearInterval(iv);QTOK=null;result(s,qz,items,ans,secs?left:-1)};
+ const tick=()=>{if(QTOK!==tok){clearInterval(iv);return}left=Math.max(0,secs-Math.floor((Date.now()-t0)/1000));
+  const e=document.getElementById("qt");if(!e&&!document.getElementById("st")){clearInterval(iv);return}
+  if(e){e.textContent="⏱ "+fmtT(left);e.classList.toggle("low",left<=20)}
+  if(left<=0)finish()};
  const draw=()=>{const it=items[cur],N=items.length;
-  page(`<h2>${qz[0]}</h2><div class="msg" id="st" style="margin:0"></div>
+  page(`<h2>${qz[0]}</h2>${secs?`<div class="tmr${left<=20?" low":""}" id="qt">⏱ ${fmtT(left)}</div>`:""}<div class="msg" id="st" style="margin:0"></div>
   <div class="q"><b>${cur+1}. ${esc(it.q)}</b>${it.o.map((o,j)=>`<label data-j="${j}">${LET[j]}) ${esc(o[0])}</label>`).join("")}</div>
   <button class="btn alt" id="fg"></button>
   <div class="row"><button class="btn alt" id="pv" ${cur?"":"disabled"}>→ السابق</button><button class="btn" id="nx" ${cur<N-1?"":"disabled"}>التالي ←</button></div>
@@ -162,9 +170,9 @@ function quiz(s,qz){
   app.querySelectorAll(".nb").forEach(b=>b.onclick=()=>{cur=+b.dataset.i;draw()});
   document.getElementById("sb").onclick=()=>{const un=ans.filter(a=>a<0).length,f=fl.filter(Boolean).length;
    if((un||f)&&!confirm((un?"لم تجب عن "+un+" سؤال. ":"")+(f?"لديك "+f+" سؤال معلّم للمراجعة. ":"")+"هل تريد التسليم الآن؟"))return;
-   result(s,qz,items,ans)};
+   finish()};
   upd();window.scrollTo(0,0)};
- draw();
+ draw();if(secs)iv=setInterval(tick,500);
 }
 async function prt(ms,getBlob){
  ms.textContent="جاري تجهيز الملف للطباعة…";
@@ -172,9 +180,9 @@ async function prt(ms,getBlob){
   f.onload=()=>{try{f.contentWindow.focus();f.contentWindow.print();ms.textContent="تم فتح نافذة الطباعة. إن لم تظهر، حمّل الملف (PDF) ثم اطبعه من جهازك."}catch(e){ms.textContent="الطباعة المباشرة غير متاحة هنا. حمّل الملف (PDF) ثم اطبعه من جهازك."}};
   setTimeout(()=>{if(ms.textContent.indexOf("جاري")===0)ms.textContent="إن لم تظهر نافذة الطباعة، حمّل الملف (PDF) ثم اطبعه من جهازك."},4000)}catch(e){ms.textContent="تعذر تجهيز الملف."}
 }
-function result(s,qz,items,ans){
- const sc=items.filter((it,i)=>ans[i]>=0&&it.o[ans[i]][1]).length;cloudAttempt(s,qz[0],sc,items.length);
- page(`<h2>نتيجة: ${qz[0]}</h2><div class="msg" style="margin:0;color:var(--ink);font-weight:bold">الطالب: ${esc(user)} · ${esc(s)}</div><div class="score">${sc} / ${items.length}</div>
+function result(s,qz,items,ans,left){
+ const sc=items.filter((it,i)=>ans[i]>=0&&it.o[ans[i]][1]).length,secs=qz[4]||0,bn=secs&&left>0?Math.floor(sc*left/secs):0;window.__bonus=bn;cloudAttempt(s,qz[0],sc,items.length);
+ page(`<h2>نتيجة: ${qz[0]}</h2><div class="msg" style="margin:0;color:var(--ink);font-weight:bold">الطالب: ${esc(user)} · ${esc(s)}</div><div class="score">${sc} / ${items.length}</div>${secs?`<div class="msg" style="margin:0 0 8px;color:var(--ink);font-weight:bold">${left===0?"⏰ انتهى الوقت وتم التسليم تلقائيًا · ":""}الوقت المتبقي ${Math.floor(left/60)}:${String(left%60).padStart(2,"0")} · ⚡ مكافأة السرعة +${bn} نقطة · مجموع نقاط المحاولة ${sc+bn}</div>`:""}
  <button class="btn" id="fl">⬇️ حفظ ملف النتيجة (PDF)</button><button class="btn alt" id="pr">🖨️ طباعة الملف</button><div class="msg" id="ms"></div>
  ${items.map((it,i)=>`<div class="q"><b>${i+1}. ${esc(it.q)}</b>${it.o.map((o,j)=>`<label class="${o[1]?"ok":(ans[i]===j?"bad":"")}">${LET[j]}) ${esc(o[0])}${o[1]?" ✓":""}${ans[i]===j&&!o[1]?" ✗ (إجابتك)":""}</label>`).join("")}</div>`).join("")}
  <button class="btn alt" id="rt">إعادة الاختبار</button>`,()=>quizList(s));
@@ -325,7 +333,7 @@ async function flush(){const P=PEND,uid=UID;PEND={};if(!uid)return;
   if(Object.keys(root).length){root.updatedAt=SVT();b.set(db.doc("users/"+uid),root,{merge:true})}
   await b.commit()}catch(e){toast("تعذر الحفظ السحابي ("+(e.code||"خطأ")+")")}}
 function cloudName(v){if(db&&UID)db.doc("users/"+UID).set({name:v,updatedAt:SVT()},{merge:true}).catch(e=>toast("تعذر حفظ الاسم ("+(e.code||"خطأ")+")"))}
-function cloudAttempt(s,q,sc,n){if(db&&UID)db.collection("users/"+UID+"/attempts").add({subject:s,quiz:q,score:sc,total:n,at:SVT()}).catch(()=>{})}
+function cloudAttempt(s,q,sc,n){if(db&&UID)db.collection("users/"+UID+"/attempts").add({subject:s,quiz:q,score:sc,total:n,bonus:+window.__bonus||0,at:SVT()}).catch(()=>{})}
 async function loadCloud(u,nm){
  let prev=null;try{prev=localStorage.getItem("agri_uid")}catch(e){}
  if(prev&&prev!==u.uid)clearLocal();
