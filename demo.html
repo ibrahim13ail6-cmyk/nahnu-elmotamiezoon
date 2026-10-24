@@ -1,0 +1,31 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>تجربة خطة الأيام السبعة</title><link rel="stylesheet" href="style.css"></head><body>
+<header><h1>كلية الزراعة – نحن المتميزون</h1><p>نسخة تجريبية لخطة الأيام السبعة</p></header>
+<main id="app"></main>
+<div id="sim" style="position:sticky;bottom:0;background:#0b1f2e;color:#fff;padding:8px;text-align:center;font-size:13px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+<span style="align-self:center">محاكاة التقدم:</span>
+<button data-d="-1" style="padding:6px 10px;border-radius:8px;border:0">قبل البدء</button>
+<button data-d="0" style="padding:6px 10px;border-radius:8px;border:0">اليوم 1</button>
+<button data-d="2" style="padding:6px 10px;border-radius:8px;border:0">اليوم 3</button>
+<button data-d="4" style="padding:6px 10px;border-radius:8px;border:0">اليوم 5</button>
+<button data-d="6" style="padding:6px 10px;border-radius:8px;border:0">اليوم 7</button></div>
+<script>
+/* ===== بدائل مبسطة لدوال المنصة (core.js) لأغراض التجربة فقط ===== */
+let user="تجريبي";
+const SUBJECTS=[["اقتصاد","💰"],["حاسب آلي","💻"],["حيوان زراعي","🐄"],["رياضة عامة","📐"],["نبات","🌿"],["الكيمياء","⚗️"],["محاصيل","🌾"]];
+const app=document.getElementById("app");
+function page(inner,back){app.innerHTML=`<div class="card">${back?`<button class="back" id="bk">→ رجوع</button>`:""}${inner}</div>`;if(back)document.getElementById("bk").onclick=back}
+function btns(items,cls,fn){app.querySelectorAll("."+cls).forEach((b,i)=>b.onclick=()=>fn(items[i]))}
+function toast(m){let t=document.createElement("div");t.textContent=m;t.style.cssText="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:12px;z-index:9;font-size:14px";document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+function subjects(){page(`<h2>أهلًا ${user} 👋</h2><p style="color:var(--mut);margin:4px 0 0">اختر المادة:</p>
+<div class="grid">${SUBJECTS.map(s=>`<button class="sub"><span>${s[1]}</span>${s[0]}</button>`).join("")}</div>
+<button class="bk2" id="tp"><span>⏰</span>تنظيم الوقت</button>`);btns(SUBJECTS,"sub",s=>subject(s[0]))}
+function subject(s){page(`<h2>${s}</h2><div class="empty">هذه صفحة المادة (تجريبية) — في المنصة الحقيقية تظهر هنا المحاضرات والاختبارات.</div>`,subjects)}
+const quizList=subject,actNums=subject;
+</script>
+<script src="plan7.js"></script>
+<script>
+document.querySelectorAll("#sim button").forEach(b=>b.onclick=()=>{const d=+b.dataset.d,k="p7_"+user;
+ localStorage.setItem(k,JSON.stringify(d<0?{start:null,done:{}}:{start:Date.now()-d*864e5,done:d>=2?{1:true,2:true}:{}}));subjects()});
+subjects();
+</script></body></html>
