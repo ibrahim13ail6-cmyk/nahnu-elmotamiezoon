@@ -3,6 +3,7 @@
 "use strict";
 const root=document.documentElement;
 const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+const LOGO_MODE="halo"; /* "halo" = لوجو بلا خلفية مع حافة بيضاء واضحة | "box" = اللوجو الأصلي داخل صندوق أبيض */
 const HIDE_OLD_BUTTONS=true; /* إخفاء أزرار (تنظيم الوقت/المؤقت/لوحة الأوائل/تغيير الاسم/الخروج) من شاشة المواد لأنها صارت في القائمة */
 /* خدماتنا — عدّل النصوص كما تريد */
 const SERVICES=[
@@ -43,7 +44,7 @@ header{position:relative;padding-top:60px!important}
 .mxhd{position:relative;padding:calc(18px + env(safe-area-inset-top,0px)) 16px 16px;background:linear-gradient(135deg,var(--pri2),var(--pri));color:#fff;text-align:center;overflow:hidden}
 .mxhd:before,.mxhd:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12);animation:mxBub 7s ease-in-out infinite}
 .mxhd:before{width:110px;height:110px;top:-40px;left:-30px}.mxhd:after{width:80px;height:80px;bottom:-30px;right:-20px;animation-delay:-3s}
-.mxhd img{position:relative;display:block;width:120px;max-width:60%;margin:0 auto 6px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:mxFl 4s ease-in-out infinite}
+.mxhd img{position:relative;display:block;width:130px;max-width:62%;margin:0 auto 6px;filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:mxFl 4s ease-in-out infinite}
 .mxhd b{position:relative;display:block;font-size:17px}.mxhd small{position:relative;opacity:.9;font-size:13px}
 .mxls{flex:1;overflow:auto;padding:12px 12px 16px;display:flex;flex-direction:column;gap:8px}
 .mxit{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font-size:16px;font-weight:700;text-align:right;opacity:0;transform:translateX(30px);transition:background .2s,transform .2s,border-color .2s}
@@ -71,7 +72,7 @@ header{position:relative;padding-top:60px!important}
 ${HIDE_OLD_BUTTONS?'#tp,#tm,#lbb,#out,#lo{display:none!important}':''}
 .brand.lgok{background:transparent!important;box-shadow:none!important;padding:0!important;overflow:visible!important;animation:brIn .9s cubic-bezier(.2,1.3,.4,1) both,brFloat 4.6s ease-in-out .9s infinite!important}
 .brand.lgok::after{display:none!important}
-.brand.lgok img{filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.brand.lgok img{filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 7px rgba(255,255,255,.75)) drop-shadow(0 7px 10px rgba(0,0,0,.35))}
 html.mxtr *,html.mxtr body{transition:background-color .5s,color .5s,border-color .5s,fill .5s!important}
 @keyframes mxSpin{from{transform:rotate(-200deg) scale(.3);opacity:0}to{transform:none;opacity:1}}
 @keyframes mxIn{to{opacity:1;transform:none}}
@@ -87,7 +88,7 @@ const st=document.createElement("style");st.id="mxcss";st.textContent=css;docume
 
 /* ---------- لوجو بدون خلفية (يزيل الخلفية البيضاء تلقائيًا) ---------- */
 let LOGO="";
-function cutLogo(){const img=document.querySelector(".brand img");if(!img)return;
+function cutLogo(){const img=document.querySelector(".brand img");if(!img||LOGO_MODE==="box")return;
  const run=()=>{try{
   const w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)return;
   const cv=document.createElement("canvas");cv.width=w;cv.height=h;const cx=cv.getContext("2d",{willReadFrequently:true});cx.drawImage(img,0,0);
@@ -95,7 +96,7 @@ function cutLogo(){const img=document.querySelector(".brand img");if(!img)return
   /* لون الخلفية = متوسط الأركان */
   const cs=[[0,0],[w-1,0],[0,h-1],[w-1,h-1]];let R=0,G=0,B=0;cs.forEach(c=>{const o=(c[1]*w+c[0])*4;R+=p[o];G+=p[o+1];B+=p[o+2]});R/=4;G/=4;B/=4;
   if(Math.min(R,G,B)<150)return; /* الخلفية ليست فاتحة: لا نغيّر */
-  const T=46,near=o=>Math.abs(p[o]-R)<T&&Math.abs(p[o+1]-G)<T&&Math.abs(p[o+2]-B)<T;
+  const T=34,near=o=>Math.abs(p[o]-R)<T&&Math.abs(p[o+1]-G)<T&&Math.abs(p[o+2]-B)<T;
   const seen=new Uint8Array(w*h),stack=new Int32Array(w*h);let sp=0;
   const push=(x,y)=>{const k=y*w+x;if(seen[k])return;if(!near(k*4))return;seen[k]=1;stack[sp++]=k};
   for(let x=0;x<w;x++){push(x,0);push(x,h-1)}for(let y=0;y<h;y++){push(0,y);push(w-1,y)}
@@ -122,6 +123,7 @@ const ITEMS=[
  {ic:"⏰",t:"تنظيم الوقت",f:"planner",run:()=>call("planner")},
  {ic:"🎯",t:"مؤقت المذاكرة",f:"timer",run:()=>call("timer")},
  {ic:"🏆",t:"لوحة الأوائل",f:"board",run:()=>call("board","lb")},
+ {ic:"📊",t:"إحصائياتي وتقريري",f:"openStats",run:()=>{typeof window.openStats==="function"&&window.openStats()}},
  {ic:"🗓️",t:"خطة الأيام السبعة",f:"openPlan7",run:()=>{typeof window.openPlan7==="function"&&window.openPlan7()}},
  {ic:"🌟",t:"خدماتنا",cls:"sv",chev:true,always:true,run:()=>openSv()},
  {ic:"🚪",t:"تسجيل الخروج",cls:"out",need:"uid",run:()=>{try{(0,eval)("auth").signOut()}catch(e){location.reload()}}}

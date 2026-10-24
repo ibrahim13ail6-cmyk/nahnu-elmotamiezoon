@@ -382,4 +382,4 @@ function boot(){
 }
 
 /* ===== تحميل تلقائي لتحديثات الكيمياء وخطة الأيام السبعة (لا يحتاج تعديل ملفات HTML) ===== */
-(function(){["chem.js","plan7.js","menu.js"].forEach(function(f){var s=document.createElement("script");s.src=f;s.async=false;(document.head||document.documentElement).appendChild(s)})})();
+(function(){["chem.js","plan7.js","stats.js","menu.js"].forEach(function(f){var s=document.createElement("script");s.src=f;s.async=false;(document.head||document.documentElement).appendChild(s)})})();
