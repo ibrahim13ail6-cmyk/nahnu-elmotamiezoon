@@ -173,10 +173,15 @@ function confetti(){const c=app.querySelector(".card");if(!c)return;
 function entry(){
  inject();const s=load(),N=subs().length||7;
  const dn=Object.keys(s.done).filter(k=>s.done[k]).length;
- const g=app.querySelector(".grid");if(!g)return;
+ const g=app.querySelector(".grid");if(!g||g.querySelector("#p7e"))return;
  const b=document.createElement("button");b.className="sub p7tile";b.id="p7e";
  b.innerHTML=`<span class="ic">🗓️</span>خطة الأيام السبعة<small>${s.start?AR(dn)+" / "+AR(N)+" أيام":"ابدأ الآن"}</small>`;
  b.onclick=plan;g.appendChild(b)}
-if(typeof subjects==="function"){const _s=subjects;subjects=function(){stop();_s.apply(this,arguments);try{entry()}catch(e){}}}
-window.openPlan7=plan;
+/* يراقب شاشة المواد ويضيف المربع مهما كان ترتيب تحميل الملفات أو أي تعديل على subjects */
+function mount(){try{const a=document.getElementById("app");if(!a)return;const g=a.querySelector(".grid");
+ if(g&&!g.querySelector("#p7e")&&g.querySelectorAll(".sub").length===subs().length&&!a.querySelector(".p7c"))entry()}catch(e){}}
+function watch(){const a=document.getElementById("app");if(!a){document.addEventListener("DOMContentLoaded",watch);return}
+ new MutationObserver(()=>{mount()}).observe(a,{childList:true});mount()}
+watch();
+window.openPlan7=plan;window.PLAN7_LOADED=true;try{console.log("plan7.js محمّل");}catch(e){}
 })();
