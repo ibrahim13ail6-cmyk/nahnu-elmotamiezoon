@@ -381,4 +381,5 @@ function boot(){
   user=await loadCloud(u,PNAME);PNAME=null;subjects()});
 }
 
-
+/* ===== تحميل تلقائي لتحديثات الكيمياء وخطة الأيام السبعة (لا يحتاج تعديل ملفات HTML) ===== */
+(function(){["chem.js","plan7.js"].forEach(function(f){var s=document.createElement("script");s.src=f;s.async=false;(document.head||document.documentElement).appendChild(s)})})();
