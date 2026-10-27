@@ -93,36 +93,6 @@ const css=`
 @keyframes p7flt{50%{transform:translateY(-5px)}}
 @keyframes p7bgm{50%{background-position:100% 0}}
 @keyframes p7cf{to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
-
-/* ===== صفحة اليوم الأول: تصميم النعناع (جدول المواد) ===== */
-.card.p7m{background:linear-gradient(160deg,#eafcf6,#c9f3e7 60%,#e7fbf6);border:1px solid #9edfce;color:#12352f;padding:16px 12px 22px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(15,118,110,.18)}
-.p7m .back{color:#0f766e}
-.p7mh{font-size:26px;font-weight:900;color:#0b2f2a;margin:8px 4px 10px;animation:p7in .6s both}
-.p7mp{display:flex;align-items:center;gap:8px;margin:0 4px 14px}
-.p7mp .bar{flex:1;height:12px;border-radius:99px;background:rgba(255,255,255,.75);border:1px solid #9edfce;overflow:hidden}
-.p7mp .bar b{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#34d399,#0f9b86);transition:width .8s cubic-bezier(.2,.8,.2,1)}
-.p7mp span{font-weight:800;font-size:13px;min-width:40px;text-align:left;direction:ltr}
-.p7ml{margin:0 4px 6px;font-weight:800;font-size:15px;color:#164e45}
-.p7mt{border-radius:16px;overflow:hidden;border:1px solid #8fd8c5;background:rgba(255,255,255,.35)}
-.p7mr{display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr);gap:5px;padding:7px 5px;align-items:center;border-top:1px solid #b5e8db;animation:p7in .5s both}
-.p7mr.hd{background:#2f9e8a;color:#fff;font-weight:800;font-size:11.5px;text-align:center;border:0;line-height:1.4}
-.p7ms{font-weight:800;font-size:12px;text-align:center;line-height:1.4}
-.p7ms i{display:block;font-style:normal;font-size:22px}
-.p7mc{box-sizing:border-box;min-width:0;display:flex;align-items:center;gap:4px;padding:8px 6px;background:#fff;border-radius:12px;border:1.5px solid #cdeee5;box-shadow:0 2px 6px rgba(15,118,110,.12);text-align:right;width:100%;color:#12352f;font-family:inherit;transition:transform .15s,border-color .2s}
-.p7mc:active{transform:scale(.97)}
-.p7mc .t{flex:1;min-width:0;font-weight:800;font-size:12px;line-height:1.4}
-.p7mc small{display:block;font-weight:600;color:#5b7a73;font-size:10.5px}
-.p7ck{flex:0 0 28px;height:28px;margin:-2px;border-radius:9px;display:flex;align-items:center;justify-content:center}
-.p7ck:before{content:"";width:22px;height:22px;box-sizing:border-box;border-radius:7px;border:2px solid #7fcdb9;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;line-height:1}
-.p7mc.on{border-color:#14a38b;box-shadow:0 0 0 3px rgba(20,163,139,.18)}
-.p7mc.on .p7ck:before{content:"✓";background:#14a38b;border-color:#14a38b}
-.p7mrep{display:flex;align-items:center;gap:10px;width:100%;margin-top:16px;padding:12px 14px;border-radius:14px;border:1px solid #8fd8c5;background:#fff;color:#12352f;font-size:15px;font-weight:800;text-align:right;font-family:inherit}
-.p7mrep small{margin-right:auto;font-weight:600;color:#5b7a73;font-size:12px}
-.p7m .p7team{background:rgba(255,255,255,.55);border-color:#8fd8c5;margin-top:22px}
-.p7m .p7tt{background:#fff;color:#0f766e;border-color:#2f9e8a}
-.p7m .p7p{color:#12352f}.p7m .p7p em{color:#2c6b60}
-.p7m .p7av{border-color:#2f9e8a;background:radial-gradient(circle at 35% 30%,#d7f6ee,#8fd8c5);box-shadow:none}
-.p7mw{padding:10px 12px;margin-top:8px;border-radius:12px;background:#fff;border:1px solid #cdeee5;font-weight:700;font-size:14px}
 @media (prefers-reduced-motion:reduce){.p7c *,.sub.p7tile,.sub.p7tile *{animation:none!important;transition:none!important}}
 `;
 function inject(){if(document.getElementById("p7css"))return;const st=document.createElement("style");st.id="p7css";st.textContent=css;document.head.appendChild(st)}
@@ -161,7 +131,7 @@ function plan(){
  const c=app.querySelector(".card");if(c)c.classList.add("p7c");
  const f=document.getElementById("p7f");if(f)setTimeout(()=>{f.style.width=Math.round(doneN/N*100)+"%"},120);
  const go=document.getElementById("p7go");if(go)go.onclick=()=>{s.start=Date.now();store(s);plan();confetti()};
- const rs=document.getElementById("p7rs");if(rs)rs.onclick=()=>{if(confirm("هل تريد إعادة ضبط الخطة من البداية؟")){store({start:null,done:{},chk:{}});plan()}};
+ const rs=document.getElementById("p7rs");if(rs)rs.onclick=()=>{if(confirm("هل تريد إعادة ضبط الخطة من البداية؟")){store({start:null,done:{}});plan()}};
  app.querySelectorAll(".p7n").forEach(b=>b.onclick=()=>{const n=+b.dataset.i;
   if(isOpen(s,n))day(n);else{b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");
    toast(s.start?"🔒 اليوم مغلق — يُفتح "+(n-1===Math.round((d0(Date.now())-d0(s.start))/DAY)+1?"غدًا":"في موعده"):"🔒 اضغط «ابدأ الخطة» أولًا")}});
@@ -174,64 +144,9 @@ function plan(){
   up();tick=setInterval(up,1000)}
 }
 
-
-/* ---------- اليوم الأول بالتصميم الجديد (جدول المواد + خانات الإنجاز) ---------- */
-const D1=[["اقتصاد",[["lec",1],["lec",2]]],["الكيمياء",[["lec",1],["sec",1]]],["رياضة عامة",[["lec",1],["sec",1]]],["محاصيل",[["lec",1],["sec",1]]]];
-const KL={lec:"المحاضرة",sec:"السكشن"};
-const icoOf=n=>{const f=(typeof SUBJECTS!=="undefined"?SUBJECTS:[]).find(x=>x[0]===n);return f?f[1]:"📘"};
-const ckey=(sub,k,n)=>"d1|"+sub+"|"+k+n;
-function openCell(sub,k,n){
- const back=()=>day1(),fl=FILES[[sub,k,"pdf",n].join("|")],lab=KL[k]+" "+AR(n);
- if(!fl||!fl.length){page(`<h2>${lab} – ${esc(sub)}</h2><div class="empty">لم يتم رفع محتوى هنا بعد.</div>`,back);return}
- if(fl.length===1){viewer(fl[0],back);return}
- page(`<h2>${lab} – ${esc(sub)}</h2><div class="list">${fl.map(f=>`<button class="opt"><span>📄</span>${esc(f.name)}</button>`).join("")}</div>`,back);
- btns(fl,"opt",f=>viewer(f,()=>openCell(sub,k,n)));
-}
-function d1report(){
- const s=load(),c=s.chk||{},miss=[];
- D1.forEach(r=>r[1].forEach(x=>{if(!c[ckey(r[0],x[0],x[1])])miss.push(`${icoOf(r[0])} ${r[0]} – ${KL[x[0]]} ${AR(x[1])}`)}));
- page(`<h2>📊 تقرير نقاط الضعف الأسبوعي</h2><div style="font-size:14px;margin:4px 0 8px">المهام التي لم تُنجز بعد في اليوم الأول:</div>${miss.length?miss.map(m=>`<div class="p7mw">⚠️ ${m}</div>`).join(""):`<div class="p7mw">🎉 لا توجد نقاط ضعف، أنجزت كل مهام اليوم الأول!</div>`}`,day1);
- const cd=app.querySelector(".card");if(cd)cd.classList.add("p7m");
-}
-function day1(){
- inject();stop();
- const s=load();s.chk=s.chk||{};
- const total=D1.reduce((a,r)=>a+r[1].length,0);
- const cnt=()=>Object.keys(s.chk).filter(k=>s.chk[k]).length;
- const rows=D1.map((r,i)=>`<div class="p7mr" style="animation-delay:${i*.08}s"><div class="p7ms"><i>${icoOf(r[0])}</i>${r[0]}</div>${r[1].map(x=>{const on=!!s.chk[ckey(r[0],x[0],x[1])],ok=!!FILES[[r[0],x[0],"pdf",x[1]].join("|")];
-  return `<div class="p7mc ${on?"on":""}" data-s="${r[0]}" data-k="${x[0]}" data-n="${x[1]}" role="button" tabindex="0"><span class="t">${KL[x[0]]} ${AR(x[1])}<small>${ok?"متاح ✓":"قريبًا"}</small></span><span class="p7ck" data-ck="1" aria-label="تم"></span></div>`}).join("")}</div>`).join("");
- const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}<em>${p.role}</em>`:p.role}</div>`).join("");
- page(`<div class="p7mh">اليوم ${AR(1)}: الانطلاق</div>
- <div class="p7mp"><div class="bar"><b id="p7mf"></b></div><span id="p7mpc">٠٪</span></div>
- <div class="p7ml">اليوم الدراسي</div>
- <div class="p7mt"><div class="p7mr hd"><div>الموضوع</div><div>المحاضرة</div><div>السكشن / المحاضرة ٢</div></div>${rows}</div>
- <button class="p7mrep" id="p7rp"><span>📊</span>تقرير نقاط الضعف الأسبوعي<small>اضغط للعرض</small></button>
- <div class="p7team"><span class="p7tt">فريق العمل</span><div class="p7tm">${team}</div></div>`,plan);
- const c=app.querySelector(".card");if(c)c.classList.add("p7m");
- const upd=(anim)=>{const p=Math.round(cnt()/total*100);const f=document.getElementById("p7mf"),t=document.getElementById("p7mpc");
-  if(t)t.textContent=AR(p)+"٪";if(f)setTimeout(()=>{f.style.width=p+"%"},anim?120:0)};
- upd(true);
- app.querySelectorAll(".p7mc").forEach(el=>{
-  const go=()=>openCell(el.dataset.s,el.dataset.k,+el.dataset.n);
-  el.onclick=e=>{
-   if(e.target.closest("[data-ck]")){
-    e.stopPropagation();const t=load();t.chk=t.chk||{};const k=ckey(el.dataset.s,el.dataset.k,el.dataset.n);
-    t.chk[k]=!t.chk[k];
-    const all=D1.every(r=>r[1].every(x=>t.chk[ckey(r[0],x[0],x[1])]));
-    t.done[1]=all;store(t);s.chk=t.chk;
-    el.classList.toggle("on",!!t.chk[k]);upd(false);
-    if(t.chk[k]&&all){confetti();setTimeout(plan,1400)}
-    return}
-   go()};
-  el.onkeydown=e=>{if(e.key==="Enter")el.click()};
- });
- document.getElementById("p7rp").onclick=d1report;
-}
-
 /* ---------- صفحة اليوم ---------- */
 function day(n){
  inject();stop();
- if(n===1)return day1();
  const s=load(),x=subs()[n-1];if(!x)return plan();
  const dn=!!s.done[n];
  page(`${bg()}<div class="p7rib">يوم ${AR(n)}</div>
@@ -268,5 +183,5 @@ function mount(){try{const a=document.getElementById("app");if(!a)return;const g
 function watch(){const a=document.getElementById("app");if(!a){document.addEventListener("DOMContentLoaded",watch);return}
  new MutationObserver(()=>{mount()}).observe(a,{childList:true});mount()}
 watch();
-window.openPlan7=plan;window.PLAN7_LOADED=true;try{console.log("plan7.js محمّل – نسخة اليوم الأول الجديدة");}catch(e){}
+window.openPlan7=plan;window.PLAN7_LOADED=true;try{console.log("plan7.js محمّل");}catch(e){}
 })();
