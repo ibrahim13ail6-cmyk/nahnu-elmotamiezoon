@@ -175,33 +175,46 @@ function plan(){
 }
 
 
-/* ---------- اليوم الأول بالتصميم الجديد (جدول المواد + خانات الإنجاز) ---------- */
-const D1=[["اقتصاد",[["lec",1],["lec",2]]],["الكيمياء",[["lec",1],["sec",1]]],["رياضة عامة",[["lec",1],["sec",1]]],["محاصيل",[["lec",1],["sec",1]]]];
+/* ---------- أيام الخطة السبعة بالتصميم الجديد (جدول المواد + خانات الإنجاز) ----------
+   للتعديل: غيّر المواد أو أرقام المحاضرات/السكاشن هنا. كل خلية = [نوع, رقم] حيث النوع lec (محاضرة) أو sec (سكشن). */
+const DAYS=[
+ null,
+ {t:"الانطلاق",r:[["اقتصاد",[["lec",1],["lec",2]]],["الكيمياء",[["lec",1],["sec",1]]],["رياضة عامة",[["lec",1],["sec",1]]],["محاصيل",[["lec",1],["sec",1]]]]},
+ {t:"المتابعة والانتظام",r:[["حيوان زراعي",[["lec",1],["sec",1]]],["نبات",[["lec",1],["sec",1]]],["حاسب آلي",[["lec",1],["sec",1]]],["اقتصاد",[["lec",3],["sec",1]]]]},
+ {t:"الإنجاز والتركيز",r:[["رياضة عامة",[["lec",2],["sec",2]]],["محاصيل",[["lec",2],["sec",2]]],["الكيمياء",[["lec",2],["sec",2]]],["حيوان زراعي",[["lec",2],["sec",2]]]]},
+ {t:"الاستمرار والثبات",r:[["اقتصاد",[["lec",4],["sec",2]]],["نبات",[["lec",2],["sec",2]]],["حاسب آلي",[["lec",2],["sec",2]]],["رياضة عامة",[["lec",3],["sec",3]]]]},
+ {t:"العزيمة والتقدم",r:[["الكيمياء",[["lec",3],["sec",3]]],["حيوان زراعي",[["lec",3],["sec",3]]],["محاصيل",[["lec",3],["sec",3]]],["نبات",[["lec",3],["sec",3]]]]},
+ {t:"المثابرة والتفوق",r:[["رياضة عامة",[["lec",4],["sec",4]]],["حاسب آلي",[["lec",3],["sec",3]]],["الكيمياء",[["lec",4],["lec",5]]],["اقتصاد",[["lec",5],["sec",3]]]]},
+ {t:"الاحتفال والختام",r:[["حيوان زراعي",[["lec",4],["lec",5]]],["محاصيل",[["lec",4],["sec",4]]],["نبات",[["lec",4],["lec",5]]],["اقتصاد",[["sec",4],["sec",5]]]]}
+];
 const KL={lec:"المحاضرة",sec:"السكشن"};
 const icoOf=n=>{const f=(typeof SUBJECTS!=="undefined"?SUBJECTS:[]).find(x=>x[0]===n);return f?f[1]:"📘"};
-const ckey=(sub,k,n)=>"d1|"+sub+"|"+k+n;
-function openCell(sub,k,n){
- const back=()=>day1(),fl=FILES[[sub,k,"pdf",n].join("|")],lab=KL[k]+" "+AR(n);
+const ckey=(d,sub,k,n)=>"d"+d+"|"+sub+"|"+k+n;
+function openCell(d,sub,k,n){
+ const back=()=>dayN(d),fl=FILES[[sub,k,"pdf",n].join("|")],lab=KL[k]+" "+AR(n);
  if(!fl||!fl.length){page(`<h2>${lab} – ${esc(sub)}</h2><div class="empty">لم يتم رفع محتوى هنا بعد.</div>`,back);return}
  if(fl.length===1){viewer(fl[0],back);return}
  page(`<h2>${lab} – ${esc(sub)}</h2><div class="list">${fl.map(f=>`<button class="opt"><span>📄</span>${esc(f.name)}</button>`).join("")}</div>`,back);
- btns(fl,"opt",f=>viewer(f,()=>openCell(sub,k,n)));
+ btns(fl,"opt",f=>viewer(f,()=>openCell(d,sub,k,n)));
 }
-function d1report(){
- const s=load(),c=s.chk||{},miss=[];
- D1.forEach(r=>r[1].forEach(x=>{if(!c[ckey(r[0],x[0],x[1])])miss.push(`${icoOf(r[0])} ${r[0]} – ${KL[x[0]]} ${AR(x[1])}`)}));
- page(`<h2>📊 تقرير نقاط الضعف الأسبوعي</h2><div style="font-size:14px;margin:4px 0 8px">المهام التي لم تُنجز بعد في اليوم الأول:</div>${miss.length?miss.map(m=>`<div class="p7mw">⚠️ ${m}</div>`).join(""):`<div class="p7mw">🎉 لا توجد نقاط ضعف، أنجزت كل مهام اليوم الأول!</div>`}`,day1);
+function weekReport(d){
+ const s=load(),c=s.chk||{};let html="",any=false;
+ for(let i=1;i<=7;i++){if(!isOpen(s,i))continue;
+  const miss=[];DAYS[i].r.forEach(r=>r[1].forEach(x=>{if(!c[ckey(i,r[0],x[0],x[1])])miss.push(`⚠️ ${icoOf(r[0])} ${r[0]} – ${KL[x[0]]} ${AR(x[1])}`)}));
+  if(miss.length){any=true;html+=`<div class="p7ml" style="margin-top:12px">يوم ${AR(i)}: ${DAYS[i].t}</div>${miss.map(m=>`<div class="p7mw">${m}</div>`).join("")}`}}
+ page(`<h2>📊 تقرير نقاط الضعف الأسبوعي</h2><div style="font-size:14px;margin:4px 0 4px">المهام التي لم تُنجز بعد في الأيام المفتوحة:</div>${any?html:`<div class="p7mw">🎉 لا توجد نقاط ضعف، أنجزت كل مهام الأيام المفتوحة!</div>`}`,()=>dayN(d));
  const cd=app.querySelector(".card");if(cd)cd.classList.add("p7m");
 }
-function day1(){
+function dayN(n){
  inject();stop();
+ const D=DAYS[n];if(!D)return plan();
  const s=load();s.chk=s.chk||{};
- const total=D1.reduce((a,r)=>a+r[1].length,0);
- const cnt=()=>Object.keys(s.chk).filter(k=>s.chk[k]).length;
- const rows=D1.map((r,i)=>`<div class="p7mr" style="animation-delay:${i*.08}s"><div class="p7ms"><i>${icoOf(r[0])}</i>${r[0]}</div>${r[1].map(x=>{const on=!!s.chk[ckey(r[0],x[0],x[1])],ok=!!FILES[[r[0],x[0],"pdf",x[1]].join("|")];
+ const total=D.r.reduce((a,r)=>a+r[1].length,0);
+ const cnt=()=>D.r.reduce((a,r)=>a+r[1].filter(x=>s.chk[ckey(n,r[0],x[0],x[1])]).length,0);
+ const rows=D.r.map((r,i)=>`<div class="p7mr" style="animation-delay:${i*.08}s"><div class="p7ms"><i>${icoOf(r[0])}</i>${r[0]}</div>${r[1].map(x=>{const on=!!s.chk[ckey(n,r[0],x[0],x[1])],ok=!!FILES[[r[0],x[0],"pdf",x[1]].join("|")];
   return `<div class="p7mc ${on?"on":""}" data-s="${r[0]}" data-k="${x[0]}" data-n="${x[1]}" role="button" tabindex="0"><span class="t">${KL[x[0]]} ${AR(x[1])}<small>${ok?"متاح ✓":"قريبًا"}</small></span><span class="p7ck" data-ck="1" aria-label="تم"></span></div>`}).join("")}</div>`).join("");
  const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}<em>${p.role}</em>`:p.role}</div>`).join("");
- page(`<div class="p7mh">اليوم ${AR(1)}: الانطلاق</div>
+ page(`<div class="p7mh">اليوم ${AR(n)}: ${D.t}</div>
  <div class="p7mp"><div class="bar"><b id="p7mf"></b></div><span id="p7mpc">٠٪</span></div>
  <div class="p7ml">اليوم الدراسي</div>
  <div class="p7mt"><div class="p7mr hd"><div>الموضوع</div><div>المحاضرة</div><div>السكشن / المحاضرة ٢</div></div>${rows}</div>
@@ -212,26 +225,25 @@ function day1(){
   if(t)t.textContent=AR(p)+"٪";if(f)setTimeout(()=>{f.style.width=p+"%"},anim?120:0)};
  upd(true);
  app.querySelectorAll(".p7mc").forEach(el=>{
-  const go=()=>openCell(el.dataset.s,el.dataset.k,+el.dataset.n);
   el.onclick=e=>{
    if(e.target.closest("[data-ck]")){
-    e.stopPropagation();const t=load();t.chk=t.chk||{};const k=ckey(el.dataset.s,el.dataset.k,el.dataset.n);
+    e.stopPropagation();const t=load();t.chk=t.chk||{};const k=ckey(n,el.dataset.s,el.dataset.k,el.dataset.n);
     t.chk[k]=!t.chk[k];
-    const all=D1.every(r=>r[1].every(x=>t.chk[ckey(r[0],x[0],x[1])]));
-    t.done[1]=all;store(t);s.chk=t.chk;
+    const all=D.r.every(r=>r[1].every(x=>t.chk[ckey(n,r[0],x[0],x[1])]));
+    t.done[n]=all;store(t);s.chk=t.chk;
     el.classList.toggle("on",!!t.chk[k]);upd(false);
     if(t.chk[k]&&all){confetti();setTimeout(plan,1400)}
     return}
-   go()};
+   openCell(n,el.dataset.s,el.dataset.k,+el.dataset.n)};
   el.onkeydown=e=>{if(e.key==="Enter")el.click()};
  });
- document.getElementById("p7rp").onclick=d1report;
+ document.getElementById("p7rp").onclick=()=>weekReport(n);
 }
 
 /* ---------- صفحة اليوم ---------- */
 function day(n){
  inject();stop();
- if(n===1)return day1();
+ if(n>=1&&n<=7)return dayN(n);
  const s=load(),x=subs()[n-1];if(!x)return plan();
  const dn=!!s.done[n];
  page(`${bg()}<div class="p7rib">يوم ${AR(n)}</div>
