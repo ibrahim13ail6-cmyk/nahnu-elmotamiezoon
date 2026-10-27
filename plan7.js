@@ -7,12 +7,9 @@
 const DAY=864e5, AR=n=>Number(n).toLocaleString("ar-EG");
 /* فريق العمل: عدّل الأسماء والصور هنا (img = رابط/مسار صورة اختياري) */
 const TEAM=[
- {role:"خبير مناهج",ico:"🧭",name:"",img:""},
- {role:"مطوّر محتوى",ico:"🧩",name:"",img:""},
- {role:"مدقّق علمي",ico:"🔬",name:"",img:""},
- {role:"أستاذ مادة",ico:"🎓",name:"",img:""},
- {role:"مهندس تعليمي",ico:"🛠️",name:"",img:""},
- {role:"باحث تربوي",ico:"📚",name:"",img:""}
+ {role:"",ico:"👨‍💻",name:"المهندس إبراهيم علي السيد أبو يحيى",img:""},
+ {role:"",ico:"👨‍💻",name:"أحمد إبراهيم جمعه",img:""},
+ {role:"",ico:"👨‍💻",name:"أحمد جاسر عبدالرحمن",img:""}
 ];
 const KEY=()=>"p7_"+(typeof user!=="undefined"&&user?user:"guest");
 function load(){try{return Object.assign({start:null,done:{}},JSON.parse(localStorage.getItem(KEY())||"{}"))}catch(e){return{start:null,done:{}}}}
@@ -182,7 +179,7 @@ function plan(){
   const t=dn?`${tt} ✔`:op?tt:(s.start?`يُفتح بعد ${AR(Math.max(1,Math.ceil((opensAt(s,n)-Date.now())/DAY)))} يوم`:"يُفتح لاحقًا");
   return `<button class="p7n ${cls}" data-i="${n}" style="top:${pts[i][1]-31}px;left:${pts[i][0]}%;animation-delay:${i*.12}s"><div class="o">${o}</div><span class="t">يوم ${AR(n)}</span><small>${t}</small></button>`}).join("");
  const chips=S.map((x,i)=>`<span class="p7chip ${isOpen(s,i+1)?"on":""}" style="animation-delay:${i*.08}s">${x[1]} ${x[0]}</span>`).join("");
- const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}<em>${p.role}</em>`:p.role}</div>`).join("");
+ const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}${p.role?`<em>${p.role}</em>`:""}`:p.role}</div>`).join("");
  page(`${bg()}<div class="p7rib">لوحة الأوائل</div>
  <div class="p7h">خطة السبع أيام: لُمّ المنهج!</div>
  <div class="p7s">الأيام مغلقة، يُفتح يوم تلو الآخر!</div>
@@ -249,7 +246,7 @@ function dayN(n){
  const cnt=()=>D.r.reduce((a,r)=>a+r[1].filter(x=>s.chk[ckey(n,r[0],x[0],x[1])]).length,0);
  const rows=D.r.map((r,i)=>`<div class="p7mr" style="animation-delay:${i*.08}s"><div class="p7ms"><i>${icoOf(r[0])}</i>${r[0]}</div>${r[1].map(x=>{const on=!!s.chk[ckey(n,r[0],x[0],x[1])],ok=!!FILES[[r[0],x[0],"pdf",x[1]].join("|")];
   return `<div class="p7mc ${on?"on":""}" data-s="${r[0]}" data-k="${x[0]}" data-n="${x[1]}" role="button" tabindex="0"><span class="t">${KL[x[0]]} ${AR(x[1])}<small>${ok?"متاح ✓":"قريبًا"}</small></span><span class="p7ck" data-ck="1" aria-label="تم"></span></div>`}).join("")}</div>`).join("");
- const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}<em>${p.role}</em>`:p.role}</div>`).join("");
+ const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}${p.role?`<em>${p.role}</em>`:""}`:p.role}</div>`).join("");
  page(`<div class="p7mh">اليوم ${AR(n)}: ${D.t}</div>
  <div class="p7mp"><div class="bar"><b id="p7mf"></b></div><span id="p7mpc">٠٪</span></div>
  <div class="p7ml">اليوم الدراسي</div>
