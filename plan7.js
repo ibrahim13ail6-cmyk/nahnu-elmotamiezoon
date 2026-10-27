@@ -123,17 +123,6 @@ const css=`
 .p7m .p7p{color:#12352f}.p7m .p7p em{color:#2c6b60}
 .p7m .p7av{border-color:#2f9e8a;background:radial-gradient(circle at 35% 30%,#d7f6ee,#8fd8c5);box-shadow:none}
 .p7mw{padding:10px 12px;margin-top:8px;border-radius:12px;background:#fff;border:1px solid #cdeee5;font-weight:700;font-size:14px}
-
-/* ===== لوحة الأوائل الخاصة بالخطة ===== */
-.p7lb{margin:6px 0 0;padding:8px;border:1px solid #2c7a90;border-radius:16px;background:rgba(7,32,47,.6)}
-.p7lr{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:12px;margin:4px 0;background:#0b3550;border:1px solid transparent;animation:p7in .4s both}
-.p7lr.me{border-color:#fcd34d;background:#0f4a6b}
-.p7lr .k{flex:0 0 32px;text-align:center;font-size:20px;font-weight:900;color:#fde68a}
-.p7lr .n{flex:1;font-weight:800;font-size:14px;color:#e8f6f4}
-.p7lr small{display:block;color:#9fd8d0;font-size:11px;font-weight:600}
-.p7lr .v{font-weight:900;color:#a7f3e3;font-size:15px}
-.p7lbm{text-align:center;color:#bdf0e6;font-size:13px;padding:8px 4px;line-height:1.7}
-.p7fin{text-align:center;font-weight:800;color:#fde68a;font-size:14px;margin:2px 0 6px}
 @media (prefers-reduced-motion:reduce){.p7c *,.sub.p7tile,.sub.p7tile *{animation:none!important;transition:none!important}}
 `;
 function inject(){if(document.getElementById("p7css"))return;const st=document.createElement("style");st.id="p7css";st.textContent=css;document.head.appendChild(st)}
@@ -142,29 +131,6 @@ function inject(){if(document.getElementById("p7css"))return;const st=document.c
 const gear=(sz,top,side,cls)=>`<svg class="p7gear ${cls||""}" style="width:${sz}px;height:${sz}px;top:${top}px;${side}" viewBox="0 0 100 100"><path fill="#9ad6e6" d="M50 8l6 10a32 32 0 0 1 9 3.700l11-4 8 8-4 11a32 32 0 0 1 3.700 9l10 6v12l-10 6a32 32 0 0 1-3.700 9l4 11-8 8-11-4a32 32 0 0 1-9 3.700l-6 10H38l-6-10a32 32 0 0 1-9-3.700l-11 4-8-8 4-11a32 32 0 0 1-3.700-9L-6 56V44l10-6a32 32 0 0 1 3.700-9l-4-11 8-8 11 4a32 32 0 0 1 9-3.700L38 8zM44 34a16 16 0 1 0 .1 0z"/></svg>`;
 function bg(){let s="";for(let i=0;i<22;i++)s+=`<i style="top:${(i*37)%100}%;left:${(i*53+11)%100}%;animation-delay:${(i%7)*.45}s"></i>`;
  return `<div class="p7bg">${gear(110,-20,"left:-26px")}${gear(70,160,"right:-18px","r")}${gear(90,520,"left:-30px","r")}${gear(60,820,"right:-12px")}${s}</div>`}
-
-
-/* ---------- لوحة الأوائل: تحسب إنجاز الخطة فقط (منفصلة عن أي ترتيب آخر في الموقع) ---------- */
-function score(){const s=load(),c=s.chk||{};return{tasks:Object.keys(c).filter(k=>c[k]).length,days:Object.keys(s.done).filter(k=>s.done[k]).length}}
-function pushScore(){try{
- if(typeof db==="undefined"||!db||typeof UID==="undefined"||!UID)return;
- const sc=score();let at;try{at=SVT()}catch(e){at=Date.now()}
- db.collection("plan7_board").doc(UID).set({name:(typeof user!=="undefined"&&user)||"طالب",tasks:sc.tasks,days:sc.days,at:at},{merge:true}).catch(()=>{})}catch(e){}}
-async function board(){
- const me=score();let rows=null,fin=null,mine=(typeof UID!=="undefined"&&UID)||null;
- try{if(typeof db!=="undefined"&&db&&mine){
-   pushScore();
-   const q=await db.collection("plan7_board").orderBy("tasks","desc").limit(10).get();rows=[];
-   q.forEach(d=>{const o=d.data()||{};rows.push({id:d.id,name:o.name||"طالب",tasks:+o.tasks||0,days:+o.days||0})});
-   const f=await db.collection("plan7_board").where("days",">=",7).get();fin=f.size}}catch(e){rows=null}
- const el=document.getElementById("p7lb");if(!el)return;
- const medal=i=>["🥇","🥈","🥉"][i]||AR(i+1);
- const own=`<div class="p7lbm">إنجازك: <b>${AR(me.tasks)}</b> مهمة • <b>${AR(me.days)}</b> من ٧ أيام</div>`;
- if(rows===null){el.innerHTML=`<div class="p7lbm">${mine?"تعذر تحميل لوحة الأوائل الآن.":"سجّل الدخول بحسابك لتظهر في لوحة الأوائل."}</div>${own}`;return}
- const list=rows.filter(r=>r.tasks>0);
- el.innerHTML=`<div class="p7fin">🏁 أنهوا الخطة كاملة: ${AR(fin||0)}</div>`+
-  (list.length?list.map((r,i)=>`<div class="p7lr ${r.id===mine?"me":""}" style="animation-delay:${i*.05}s"><span class="k">${medal(i)}</span><span class="n">${esc(r.name)}<small>${AR(r.days)} من ٧ أيام</small></span><span class="v">${AR(r.tasks)}</span></div>`).join(""):`<div class="p7lbm">لا يوجد أوائل بعد — كن أول من ينجز مهام الخطة!</div>`)+
-  (list.some(r=>r.id===mine)?"":own)}
 
 /* ---------- الصفحة الرئيسية للخطة ---------- */
 let tick=null;
@@ -178,8 +144,8 @@ function plan(){
  let d="M"+pts[0][0]+" "+pts[0][1];
  for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],m=(a[1]+b[1])/2;d+=` C ${a[0]} ${m} ${b[0]} ${m} ${b[0]} ${b[1]}`}
  const nodes=S.map((x,i)=>{const n=i+1,op=isOpen(s,n),dn=!!s.done[n];
-  const cls=dn?"done":op?"open":"lock",o=dn?"✔":op?"📚":"🔒",tt=(DAYS[n]&&DAYS[n].t)||x[0];
-  const t=dn?`${tt} ✔`:op?tt:(s.start?`يُفتح بعد ${AR(Math.max(1,Math.ceil((opensAt(s,n)-Date.now())/DAY)))} يوم`:"يُفتح لاحقًا");
+  const cls=dn?"done":op?"open":"lock",o=dn?"✔":op?x[1]:"🔒";
+  const t=dn?`${x[0]} ✔`:op?x[0]:(s.start?`يُفتح بعد ${AR(Math.max(1,Math.ceil((opensAt(s,n)-Date.now())/DAY)))} يوم`:"يُفتح لاحقًا");
   return `<button class="p7n ${cls}" data-i="${n}" style="top:${pts[i][1]-31}px;left:${pts[i][0]}%;animation-delay:${i*.12}s"><div class="o">${o}</div><span class="t">يوم ${AR(n)}</span><small>${t}</small></button>`}).join("");
  const chips=S.map((x,i)=>`<span class="p7chip ${isOpen(s,i+1)?"on":""}" style="animation-delay:${i*.08}s">${x[1]} ${x[0]}</span>`).join("");
  const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}<em>${p.role}</em>`:p.role}</div>`).join("");
@@ -190,11 +156,9 @@ function plan(){
  ${s.start?`<div class="p7cdp" id="p7cd"></div>`:`<button class="p7start" id="p7go">🚀 ابدأ الخطة الآن</button>`}
  <div class="p7path" style="--H:${H}px"><svg viewBox="0 0 100 ${H}" preserveAspectRatio="none"><path class="base" vector-effect="non-scaling-stroke" d="${d}"/><path class="flow" vector-effect="non-scaling-stroke" d="${d}"/></svg>${nodes}</div>
  <div class="p7sec">التصنيفات والخطط</div><div class="p7chips">${chips}</div>
- <div class="p7sec">🏆 لوحة الأوائل</div><div class="p7lb" id="p7lb"><div class="p7lbm">جاري التحميل…</div></div>
  <div class="p7team"><span class="p7tt">فريق العمل</span><div class="p7tm">${team}</div></div>
  ${s.start?`<button class="back" id="p7rs" style="margin-top:14px;font-size:13px;opacity:.8">↺ إعادة ضبط الخطة</button>`:""}`,subjects);
  const c=app.querySelector(".card");if(c)c.classList.add("p7c");
- board();
  const f=document.getElementById("p7f");if(f)setTimeout(()=>{f.style.width=Math.round(doneN/N*100)+"%"},120);
  const go=document.getElementById("p7go");if(go)go.onclick=()=>{s.start=Date.now();store(s);plan();confetti()};
  const rs=document.getElementById("p7rs");if(rs)rs.onclick=()=>{if(confirm("هل تريد إعادة ضبط الخطة من البداية؟")){store({start:null,done:{},chk:{}});plan()}};
@@ -211,46 +175,33 @@ function plan(){
 }
 
 
-/* ---------- أيام الخطة السبعة بالتصميم الجديد (جدول المواد + خانات الإنجاز) ----------
-   للتعديل: غيّر المواد أو أرقام المحاضرات/السكاشن هنا. كل خلية = [نوع, رقم] حيث النوع lec (محاضرة) أو sec (سكشن). */
-const DAYS=[
- null,
- {t:"الانطلاق",r:[["اقتصاد",[["lec",1],["lec",2]]],["الكيمياء",[["lec",1],["sec",1]]],["رياضة عامة",[["lec",1],["sec",1]]],["محاصيل",[["lec",1],["sec",1]]]]},
- {t:"المتابعة والانتظام",r:[["حيوان زراعي",[["lec",1],["sec",1]]],["نبات",[["lec",1],["sec",1]]],["حاسب آلي",[["lec",1],["sec",1]]],["اقتصاد",[["lec",3],["sec",1]]]]},
- {t:"الإنجاز والتركيز",r:[["رياضة عامة",[["lec",2],["sec",2]]],["محاصيل",[["lec",2],["sec",2]]],["الكيمياء",[["lec",2],["sec",2]]],["حيوان زراعي",[["lec",2],["sec",2]]]]},
- {t:"الاستمرار والثبات",r:[["اقتصاد",[["lec",4],["sec",2]]],["نبات",[["lec",2],["sec",2]]],["حاسب آلي",[["lec",2],["sec",2]]],["رياضة عامة",[["lec",3],["sec",3]]]]},
- {t:"العزيمة والتقدم",r:[["الكيمياء",[["lec",3],["sec",3]]],["حيوان زراعي",[["lec",3],["sec",3]]],["محاصيل",[["lec",3],["sec",3]]],["نبات",[["lec",3],["sec",3]]]]},
- {t:"المثابرة والتفوق",r:[["رياضة عامة",[["lec",4],["sec",4]]],["حاسب آلي",[["lec",3],["sec",3]]],["الكيمياء",[["lec",4],["lec",5]]],["اقتصاد",[["lec",5],["sec",3]]]]},
- {t:"الاحتفال والختام",r:[["حيوان زراعي",[["lec",4],["lec",5]]],["محاصيل",[["lec",4],["sec",4]]],["نبات",[["lec",4],["lec",5]]],["اقتصاد",[["sec",4],["sec",5]]]]}
-];
+/* ---------- اليوم الأول بالتصميم الجديد (جدول المواد + خانات الإنجاز) ---------- */
+const D1=[["اقتصاد",[["lec",1],["lec",2]]],["الكيمياء",[["lec",1],["sec",1]]],["رياضة عامة",[["lec",1],["sec",1]]],["محاصيل",[["lec",1],["sec",1]]]];
 const KL={lec:"المحاضرة",sec:"السكشن"};
 const icoOf=n=>{const f=(typeof SUBJECTS!=="undefined"?SUBJECTS:[]).find(x=>x[0]===n);return f?f[1]:"📘"};
-const ckey=(d,sub,k,n)=>"d"+d+"|"+sub+"|"+k+n;
-function openCell(d,sub,k,n){
- const back=()=>dayN(d),fl=FILES[[sub,k,"pdf",n].join("|")],lab=KL[k]+" "+AR(n);
+const ckey=(sub,k,n)=>"d1|"+sub+"|"+k+n;
+function openCell(sub,k,n){
+ const back=()=>day1(),fl=FILES[[sub,k,"pdf",n].join("|")],lab=KL[k]+" "+AR(n);
  if(!fl||!fl.length){page(`<h2>${lab} – ${esc(sub)}</h2><div class="empty">لم يتم رفع محتوى هنا بعد.</div>`,back);return}
  if(fl.length===1){viewer(fl[0],back);return}
  page(`<h2>${lab} – ${esc(sub)}</h2><div class="list">${fl.map(f=>`<button class="opt"><span>📄</span>${esc(f.name)}</button>`).join("")}</div>`,back);
- btns(fl,"opt",f=>viewer(f,()=>openCell(d,sub,k,n)));
+ btns(fl,"opt",f=>viewer(f,()=>openCell(sub,k,n)));
 }
-function weekReport(d){
- const s=load(),c=s.chk||{};let html="",any=false;
- for(let i=1;i<=7;i++){if(!isOpen(s,i))continue;
-  const miss=[];DAYS[i].r.forEach(r=>r[1].forEach(x=>{if(!c[ckey(i,r[0],x[0],x[1])])miss.push(`⚠️ ${icoOf(r[0])} ${r[0]} – ${KL[x[0]]} ${AR(x[1])}`)}));
-  if(miss.length){any=true;html+=`<div class="p7ml" style="margin-top:12px">يوم ${AR(i)}: ${DAYS[i].t}</div>${miss.map(m=>`<div class="p7mw">${m}</div>`).join("")}`}}
- page(`<h2>📊 تقرير نقاط الضعف الأسبوعي</h2><div style="font-size:14px;margin:4px 0 4px">المهام التي لم تُنجز بعد في الأيام المفتوحة:</div>${any?html:`<div class="p7mw">🎉 لا توجد نقاط ضعف، أنجزت كل مهام الأيام المفتوحة!</div>`}`,()=>dayN(d));
+function d1report(){
+ const s=load(),c=s.chk||{},miss=[];
+ D1.forEach(r=>r[1].forEach(x=>{if(!c[ckey(r[0],x[0],x[1])])miss.push(`${icoOf(r[0])} ${r[0]} – ${KL[x[0]]} ${AR(x[1])}`)}));
+ page(`<h2>📊 تقرير نقاط الضعف الأسبوعي</h2><div style="font-size:14px;margin:4px 0 8px">المهام التي لم تُنجز بعد في اليوم الأول:</div>${miss.length?miss.map(m=>`<div class="p7mw">⚠️ ${m}</div>`).join(""):`<div class="p7mw">🎉 لا توجد نقاط ضعف، أنجزت كل مهام اليوم الأول!</div>`}`,day1);
  const cd=app.querySelector(".card");if(cd)cd.classList.add("p7m");
 }
-function dayN(n){
+function day1(){
  inject();stop();
- const D=DAYS[n];if(!D)return plan();
  const s=load();s.chk=s.chk||{};
- const total=D.r.reduce((a,r)=>a+r[1].length,0);
- const cnt=()=>D.r.reduce((a,r)=>a+r[1].filter(x=>s.chk[ckey(n,r[0],x[0],x[1])]).length,0);
- const rows=D.r.map((r,i)=>`<div class="p7mr" style="animation-delay:${i*.08}s"><div class="p7ms"><i>${icoOf(r[0])}</i>${r[0]}</div>${r[1].map(x=>{const on=!!s.chk[ckey(n,r[0],x[0],x[1])],ok=!!FILES[[r[0],x[0],"pdf",x[1]].join("|")];
+ const total=D1.reduce((a,r)=>a+r[1].length,0);
+ const cnt=()=>Object.keys(s.chk).filter(k=>s.chk[k]).length;
+ const rows=D1.map((r,i)=>`<div class="p7mr" style="animation-delay:${i*.08}s"><div class="p7ms"><i>${icoOf(r[0])}</i>${r[0]}</div>${r[1].map(x=>{const on=!!s.chk[ckey(r[0],x[0],x[1])],ok=!!FILES[[r[0],x[0],"pdf",x[1]].join("|")];
   return `<div class="p7mc ${on?"on":""}" data-s="${r[0]}" data-k="${x[0]}" data-n="${x[1]}" role="button" tabindex="0"><span class="t">${KL[x[0]]} ${AR(x[1])}<small>${ok?"متاح ✓":"قريبًا"}</small></span><span class="p7ck" data-ck="1" aria-label="تم"></span></div>`}).join("")}</div>`).join("");
  const team=TEAM.map(p=>`<div class="p7p"><div class="p7av">${p.img?`<img src="${p.img}" alt="">`:p.ico}</div>${p.name?`${p.name}<em>${p.role}</em>`:p.role}</div>`).join("");
- page(`<div class="p7mh">اليوم ${AR(n)}: ${D.t}</div>
+ page(`<div class="p7mh">اليوم ${AR(1)}: الانطلاق</div>
  <div class="p7mp"><div class="bar"><b id="p7mf"></b></div><span id="p7mpc">٠٪</span></div>
  <div class="p7ml">اليوم الدراسي</div>
  <div class="p7mt"><div class="p7mr hd"><div>الموضوع</div><div>المحاضرة</div><div>السكشن / المحاضرة ٢</div></div>${rows}</div>
@@ -261,25 +212,26 @@ function dayN(n){
   if(t)t.textContent=AR(p)+"٪";if(f)setTimeout(()=>{f.style.width=p+"%"},anim?120:0)};
  upd(true);
  app.querySelectorAll(".p7mc").forEach(el=>{
+  const go=()=>openCell(el.dataset.s,el.dataset.k,+el.dataset.n);
   el.onclick=e=>{
    if(e.target.closest("[data-ck]")){
-    e.stopPropagation();const t=load();t.chk=t.chk||{};const k=ckey(n,el.dataset.s,el.dataset.k,el.dataset.n);
+    e.stopPropagation();const t=load();t.chk=t.chk||{};const k=ckey(el.dataset.s,el.dataset.k,el.dataset.n);
     t.chk[k]=!t.chk[k];
-    const all=D.r.every(r=>r[1].every(x=>t.chk[ckey(n,r[0],x[0],x[1])]));
-    t.done[n]=all;store(t);s.chk=t.chk;pushScore();
+    const all=D1.every(r=>r[1].every(x=>t.chk[ckey(r[0],x[0],x[1])]));
+    t.done[1]=all;store(t);s.chk=t.chk;
     el.classList.toggle("on",!!t.chk[k]);upd(false);
     if(t.chk[k]&&all){confetti();setTimeout(plan,1400)}
     return}
-   openCell(n,el.dataset.s,el.dataset.k,+el.dataset.n)};
+   go()};
   el.onkeydown=e=>{if(e.key==="Enter")el.click()};
  });
- document.getElementById("p7rp").onclick=()=>weekReport(n);
+ document.getElementById("p7rp").onclick=d1report;
 }
 
 /* ---------- صفحة اليوم ---------- */
 function day(n){
  inject();stop();
- if(n>=1&&n<=7)return dayN(n);
+ if(n===1)return day1();
  const s=load(),x=subs()[n-1];if(!x)return plan();
  const dn=!!s.done[n];
  page(`${bg()}<div class="p7rib">يوم ${AR(n)}</div>
