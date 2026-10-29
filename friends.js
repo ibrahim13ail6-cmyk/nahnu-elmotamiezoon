@@ -1,13 +1,15 @@
 /* ===== friends.js — تحدّي الأصحاب: كود لكل طالب + أصحاب + تحدّيات (معركة الأبواب) =====
    يحتاج: Firebase Auth + Firestore (موجودين في core.js) وقواعد firestore-rules-add.txt
    الواجهة العامة: openChallenge() و chPing()  */
-(function(){
-// تعريف فوري لفتح التحدي وتجنب رسالة الانتظار
+// تعريف فوري يمنع ظهور رسالة الانتظار أول ما تضغط
 if (typeof window.openChallenge !== "function") {
   window.openChallenge = function() {
-    window.location.reload();
+    console.log("جاري الفتح...");
   };
 }
+
+(function(){
+// تعريف فوري لفتح التحدي وتجنب رسالة الانتظار
 
 "use strict";
 const GAME=`<!doctype html>
