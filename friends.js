@@ -105,7 +105,7 @@ function draw(notes){
    <div class="fr-row"><button class="fr-b" id="frCp">📋 نسخ الكود</button><button class="fr-b wa" id="frWa">💬 واتساب</button></div></div>
   ${notes.length?`<div class="fr-card"><b>🔔 إشعارات</b>${notes.map(note).join("")}</div>`:""}
   <div class="fr-card"><b>➕ أضف صديق بكوده</b><div class="fr-row"><input class="fr-in" id="frIn" maxlength="9" placeholder="XXX-XXXX" autocapitalize="characters" autocomplete="off" spellcheck="false"><button class="fr-b pri" id="frAdd" style="flex:0 0 96px">إضافة</button></div><div class="fr-m" id="frM"></div></div>
-  <div class="fr-card"><b>👥 أصحابي (${FR.length})</b>${FR.length?FR.map(f=>`<div class="fr-f"><span>${E(f.name)}</span><button class="fr-b pri" data-ch="${E(f.uid)}">⚔️ تحدّى</button><button class="fr-b x" data-rm="${E(f.uid)}" aria-label="حذف">🗑</button></div>`).join(""):'<div class="empty">لسه ماضفتش أصحاب. اكتب كود صاحبك أو ابعت له كودك.</div>'}</div>
+  <div class="fr-card"><b>👥 أصحابي (${FR.length})</b>${FR.length?FR.map(f=>`<div class="fr-f"><span>${E(f.name)}</span><button class="fr-b pri" data-ch="${E(f.uid)}">⚔️ تحدّى صاحبي</button><button class="fr-b" data-cpu="1">🤖 العب مع الكمبيوتر</button><button class="fr-b x" data-rm="${E(f.uid)}" aria-label="حذف">🗑</button></div>`).join(""):'<div class="empty">لسه ماضفتش أصحاب. اكتب كود صاحبك أو ابعت له كودك.</div>'}</div>
   <button class="fr-b pri big" id="frQ">🚪 ابدأ تحدّي جديد / ادخل بكود</button>`,backFn());
   const $=id=>document.getElementById(id),msg=(t,c)=>{const m=$("frM");m.textContent=t;m.style.color=c==="ok"?"var(--pri)":"var(--bad)"};
   $("frCp").onclick=async()=>{try{await navigator.clipboard.writeText(fmt(MY));say("تم نسخ كودك")}catch(e){say("كودك: "+fmt(MY))}};
@@ -114,6 +114,7 @@ function draw(notes){
   $("frAdd").onclick=async()=>{msg("جاري البحث…","ok");try{const r=await addFriend($("frIn").value);msg(r[1],r[0]);if(r[0]==="ok"&&/تمت/.test(r[1])){say(r[1]);await loadFriends();draw(notes)}}catch(e){msg(e&&e.code==="permission-denied"?PERM:"حصلت مشكلة، جرّب تاني.","bad")}};
   $("frQ").onclick=()=>openGame({});
   app.querySelectorAll("[data-ch]").forEach(b=>b.onclick=()=>openGame({friend:FR.find(f=>f.uid===b.dataset.ch)}));
+  app.querySelectorAll("[data-cpu]").forEach(b=>b.onclick=()=>openGame({}));
   app.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{const f=FR.find(x=>x.uid===b.dataset.rm);if(!f||!confirm("حذف "+f.name+" من أصحابك؟"))return;try{await D().doc("users/"+U()+"/friends/"+f.uid).delete();await loadFriends();draw(notes)}catch(e){say("تعذّر الحذف")}});
   app.querySelectorAll("[data-ig]").forEach(b=>b.onclick=async()=>{const n=notes.find(x=>x.id===b.dataset.ig);try{n&&await n.ref.delete()}catch(e){}draw(notes.filter(x=>x!==n))});
   app.querySelectorAll("[data-acc]").forEach(b=>b.onclick=async()=>{const n=notes.find(x=>x.id===b.dataset.acc);if(!n)return;try{await n.ref.delete()}catch(e){}
