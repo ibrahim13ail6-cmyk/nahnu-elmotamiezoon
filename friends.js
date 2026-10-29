@@ -792,6 +792,5 @@ async function chPing(){
     const n=(await inbox()).length,s=b.querySelector(".fr-badge");if(s)s.textContent=n?"🔔 "+n:""}catch(e){}}
 
 })();
-window.openChallenge = function() { console.log("فتح..."); };
-window.chPing = function() {};
+window.openChallenge = openChallenge;
 
