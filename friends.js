@@ -48,7 +48,23 @@ document.head.appendChild(st);
 
 /* ---------- Firestore ---------- */
 let MY="",MYU=null,FR=[],CTX=null,GW=null,lastPing=0;
-const whoami=()=>{if(MYU!==U()){MYU=U();MY="";FR=[];lastPing=0}};
+let INBOX_UNSUB=null,SEEN=null;
+const whoami=()=>{if(MYU!==U()){MYU=U();MY="";FR=[];lastPing=0;if(INBOX_UNSUB){try{INBOX_UNSUB()}catch(e){}INBOX_UNSUB=null}}};
+/* مراقبة صندوق الوارد لحظيًا: التحدّي يوصل لصاحبك من غير ما يعمل refresh */
+function watchInbox(){
+  if(INBOX_UNSUB||!MY)return;
+  SEEN=null;
+  INBOX_UNSUB=D().collection("codes/"+MY+"/inbox").onSnapshot(async snap=>{
+    const fresh=[];
+    snap.forEach(x=>{const d=x.data()||{};if(d.kind==="challenge")fresh.push({id:x.id,name:d.name})});
+    const firstTime=SEEN===null;const seen=SEEN||new Set();
+    const news=firstTime?[]:fresh.filter(f=>!seen.has(f.id));
+    SEEN=new Set(fresh.map(f=>f.id));
+    const list=await inbox();
+    const b=document.getElementById("ch"),sp=b&&b.querySelector(".fr-badge");if(sp)sp.textContent=list.length?"🔔 "+list.length:"";
+    if(news.length)say("⚔️ "+(news[0].name||"صاحبك")+" تحدّاك! افتح «تحدّي الأصحاب» واقبل");
+  },()=>{});
+}
 async function ensureCode(){
   const uid=U(),ref=D().doc("users/"+uid),snap=await ref.get(),d=snap.data()||{};
   if(d.friendCode){
@@ -73,8 +89,10 @@ async function inbox(){
     else jobs.push(ref.delete().catch(()=>{}))});
   await Promise.all(jobs);return out}
 function sendInbox(f,data,id){
-  if(!f||!f.code)return Promise.resolve();
-  return D().doc("codes/"+f.code+"/inbox/"+id).set(Object.assign({fromUid:U(),name:NAME(),code:MY,at:ts()},data)).catch(e=>{if(e&&e.code==="permission-denied")say(PERM)})}
+  if(!f||!f.code){say("ما لقيتش كود صاحبك، ضيفه تاني من القائمة");return Promise.resolve(false)}
+  return D().doc("codes/"+f.code+"/inbox/"+id).set(Object.assign({fromUid:U(),name:NAME(),code:MY,at:ts()},data))
+    .then(()=>true).catch(e=>{console.warn("inbox send failed",e);say(e&&e.code==="permission-denied"?PERM:"تعذّر إرسال الرسالة ("+((e&&e.code)||"خطأ")+")");return false})
+}
 async function addFriend(raw){
   const c=clean(raw);if(c.length!==7)return["bad","الكود لازم يبقى 7 خانات (مثال: ABC-1234)."];
   const s=await D().doc("codes/"+c).get();if(!s.exists)return["bad","الكود ده مش موجود. اتأكد منه مع صاحبك."];
@@ -166,7 +184,7 @@ addEventListener("message",e=>{
   const d=e.data;if(!d||!d.ch||!GW||e.source!==GW.querySelector("iframe").contentWindow)return;
   if(d.ch==="close")closeGame();
   else if(d.ch==="created"&&CTX&&CTX.friend&&ok()){const f=CTX.friend;
-    sendInbox(f,{kind:"challenge",ch:d.code,subject:d.subject,count:d.count,seconds:d.seconds,qs:d.qs||null},"c_"+U()+"_"+Date.now()).then(()=>say("تم إرسال التحدّي إلى "+f.name+" 🔔"))}
+    sendInbox(f,{kind:"challenge",ch:d.code,subject:d.subject,count:d.count,seconds:d.seconds,qs:d.qs||null},"c_"+U()+"_"+Date.now()).then(ok2=>{if(ok2)say("تم إرسال التحدّي إلى "+f.name+" 🔔")})}
   else if(d.ch==="ready")onReady(d.code);
   else if(d.ch==="turn"&&CTX&&CTX.friend&&ok())sendInbox(CTX.friend,{kind:"turn",ch:d.code,idx:d.idx,ok:!!d.ok,t:Math.round(d.t||0)},"t_"+U()+"_"+Date.now()+"_"+d.idx);
   else if(d.ch==="done"&&CTX&&CTX.friend&&ok()&&d.res)
@@ -187,6 +205,7 @@ async function chPing(){
     if(!MY){const v=LS("agri_fcode")||"";if(v.indexOf(U()+":")===0)MY=v.slice(String(U()).length+1)}
     if(!MY){const d=(await D().doc("users/"+U()).get()).data()||{};MY=d.friendCode||"";if(MY)LS("agri_fcode",U()+":"+MY)}
     if(!MY)return;
+    watchInbox();
     const n=(await inbox()).length,s=b.querySelector(".fr-badge");if(s)s.textContent=n?"🔔 "+n:""}catch(e){}}
 
 window.openChallenge=openChallenge;window.chPing=chPing;
