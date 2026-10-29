@@ -2,6 +2,9 @@
    يحتاج: Firebase Auth + Firestore (موجودين في core.js) وقواعد firestore-rules-add.txt
    الواجهة العامة: openChallenge() و chPing()  */
 (function(){
+   window.openChallenge = function() { console.log("فتح..."); };
+window.chPing = function() {};
+
 "use strict";
 const GAME=`<!doctype html>
 <html lang="ar" dir="rtl">
