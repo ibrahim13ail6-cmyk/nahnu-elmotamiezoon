@@ -166,4 +166,18 @@ async function chPing(){
     const n=(await inbox()).length,s=b.querySelector(".fr-badge");if(s)s.textContent=n?"🔔 "+n:""}catch(e){}}
 
 window.openChallenge=openChallenge;window.chPing=chPing;
+   /* تعديل ومزامنة الاستماع اللحظي لتحدي الأصحاب */
+function listenToChallengeCode(code, onJoinCallback) {
+  if (!db || !code) return;
+  const roomRef = db.collection("codes").doc(code);
+  return roomRef.onSnapshot(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data && data.status === "joined" || data.guestUid) {
+        onJoinCallback(data);
+      }
+    }
+  });
+}
+
 })();
