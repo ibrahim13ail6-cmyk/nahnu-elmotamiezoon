@@ -1,12 +1,19 @@
-تحديث: الجانب العملي للكيمياء (4 سكاشن + اختبارات عملية + محتوى تفاعلي)
+تحديث: «تحدّي الأصحاب» (كود لكل طالب + أصحاب + معركة الأبواب)
 
-الملفات: core.js (يحمّل chem_lab.js تلقائيًا) + chem.js (محدّث) + chem_lab.js (الجديد) + chem_lab1..4.jpg (صفحات الملخصات)
-ارفعها في مجلد المنصة (استبدل core.js و chem.js) ثم امسح الكاش.
+الملفات: core.js (محدّث) + friends.js (جديد) + menu.js (محدّث) + firestore-rules-add.txt
+1) ارفع core.js و friends.js و menu.js في مجلد المنصة (استبدل القديم) ثم امسح الكاش.
+2) الصق قواعد firestore-rules-add.txt في Firebase ← Firestore ← Rules ثم Publish (مهم عشان الأكواد تشتغل).
 
-لو عندك core.js أحدث: لا تستبدله، وغيّر سطر التحميل في آخره إلى:
-["chem.js","chem_lab.js","plan7.js","stats.js","menu.js"]
+لو عندك core.js أحدث: لا تستبدله، وأجرِ هذه التعديلات الثلاثة فيه:
+ أ) في آخر الملف أضف "friends.js" إلى قائمة التحميل التلقائي قبل "menu.js".
+ ب) في دالة subjects(): أضف قبل <div class="grid"> الزر:
+    <button class="bk2" id="ch" style="margin-top:12px"><span>⚔️</span>تحدّي الأصحاب<small class="fr-badge"></small></button>
+ ج) في آخر subjects() بعد document.getElementById("tm").onclick=timer; أضف:
+    {const ch=document.getElementById("ch");if(ch)ch.onclick=()=>typeof openChallenge==="function"?openChallenge():toast("جاري تحميل التحدّي… جرّب بعد ثانية")}
+    if(typeof chPing==="function")chPing();
 
-أين تجده؟
-- الملفات: الكيمياء ← السكاشن ← PDF ← السكشن 1..4
-- الاختبارات: الكيمياء ← الاختبارات (اختبار عملي 1-4 + مستويات + شامل)
-- التفاعلي: الكيمياء ← المحتوى التفاعلي ← عملي 1..4
+الجديد في الواجهة:
+- زر «⚔️ تحدّي الأصحاب» في الصفحة الرئيسية وفي القائمة الجانبية.
+- لكل طالب كود شخصي (مثال ABC-1234) يظهر في الصفحة، ويقدر يرسله على الواتساب.
+- إضافة صديق بكوده، وقائمة أصحاب، وزر «⚔️ تحدّى» ويصل التحدّي كإشعار لصاحبك.
+- التحدّي بيستخدم أسئلة المنصة الحقيقية (من QUIZZES) لنفس المادة.

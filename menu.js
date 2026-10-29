@@ -125,6 +125,7 @@ const ITEMS=[
  {ic:"🏆",t:"لوحة الأوائل",f:"board",run:()=>call("board","lb")},
  {ic:"📊",t:"إحصائياتي وتقريري",f:"openStats",run:()=>{typeof window.openStats==="function"&&window.openStats()}},
  {ic:"🗓️",t:"خطة الأيام السبعة",f:"openPlan7",run:()=>{typeof window.openPlan7==="function"&&window.openPlan7()}},
+ {ic:"⚔️",t:"تحدّي الأصحاب",f:"openChallenge",run:()=>{typeof window.openChallenge==="function"&&window.openChallenge()}},
  {ic:"🌟",t:"خدماتنا",cls:"sv",chev:true,always:true,run:()=>openSv()},
  {ic:"🚪",t:"تسجيل الخروج",cls:"out",need:"uid",run:()=>{try{(0,eval)("auth").signOut()}catch(e){location.reload()}}}
 ];
