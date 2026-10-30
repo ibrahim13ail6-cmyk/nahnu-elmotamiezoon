@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الميكروسكوب: أجزاؤه وضبط العينة</title>
+<link rel="stylesheet" href="microscope.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>🔬 الميكروسكوب: أجزاؤه وضبط العينة</h1>
+
+  <div class="two">
+    <div class="card">
+      <h2>أجزاء الميكروسكوب</h2>
+      <svg class="micro" id="diagram" viewBox="0 0 420 470" aria-label="رسم الميكروسكوب مع أجزائه"></svg>
+      <small>اضغط على أي جزء أو اسمه لتعرف وظيفته. ولف المفاتيح بإصبعك، واختار العدسة من البرج.</small>
+    </div>
+
+    <div class="card">
+      <h2>ما تراه من خلال الميكروسكوب</h2>
+      <div class="scope"><canvas id="cv" width="600" height="600"></canvas></div>
+      <div class="msg" id="msg" style="margin-top:10px">حرّك المفتاح الخشن ثم الدقيق حتى تتضح العينة</div>
+      <div class="meter" style="margin-top:8px"><i id="bar"></i></div>
+      <small id="hint"></small>
+      <div id="info" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row"><label>المفتاح الخشن</label><input type="range" id="coarse" min="-100" max="100" step="1" value="0"></div>
+    <div class="row"><label>المفتاح الدقيق</label><input type="range" id="fine" min="-5" max="5" step="0.1" value="0"></div>
+    <div class="row"><label>الحاجب (الضوء)</label><input type="range" id="light" min="30" max="100" step="1" value="80"></div>
+    <div class="row"><label>برج العدسات</label>
+      <div class="btns" id="objs">
+        <button data-m="4">4x</button><button data-m="10" class="on">10x</button><button data-m="40">40x</button><button data-m="100">100x</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="q" id="qtext">🔒 أجب بعد ما تتضح العينة</p>
+    <div id="answers"></div>
+    <div class="msg" id="fb" style="margin-top:8px"></div>
+    <div class="row" style="justify-content:center;margin-top:8px">
+      <button id="next" disabled>العينة التالية ➡</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <b>📋 نتائجك</b>
+    <p id="score" style="margin:6px 0">الإجابات الصح: 0 من 0</p>
+    <table id="log"><thead><tr><th>#</th><th>النسيج</th><th>إجابتك</th><th>النتيجة</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+<script src="microscope.js"></script>
+</body>
+</html>
