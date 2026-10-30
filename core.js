@@ -37,11 +37,11 @@ function home(){
 }
 function subjects(){
  page(`<h2>أهلًا ${esc(user)} 👋</h2><p class="welcome" style="margin:0">أهلًا بكم في الفرقة الأولى</p><p style="color:var(--mut);margin:4px 0 0">اختر المادة:</p>
- <button class="bk2" id="ch" style="margin-top:12px"><span>⚔️</span>تحدّي الأصحاب<small class="fr-badge"></small></button><button class="bk2" id="guideOpen" style="margin-top:8px"><span>📘</span>دليل الاستخدام</button>
+ <button class="bk2" id="ch" style="margin-top:12px"><span>⚔️</span>تحدّي الأصحاب<small class="fr-badge"></small></button><button class="bk2" id="guideOpen" style="margin-top:8px"><span>📘</span>دليل الاستخدام</button><button class="bk2" id="supOpen" style="margin-top:8px"><span>🎧</span>الدعم الفني</button>
  <div class="grid">${SUBJECTS.map(s=>`<button class="sub"><span>${s[1]}</span>${s[0]}</button>`).join("")}</div>
  <button class="bk2" id="tp"><span>⏰</span>تنظيم الوقت</button><button class="bk2" id="tm"><span>🎯</span>مؤقت المذاكرة والإنجازات</button><button class="back" id="out" style="margin-top:14px">تغيير الاسم</button>${UID?`<button class="back" id="lo" style="margin-top:14px;margin-right:8px">🚪 تسجيل الخروج</button>`:""}`);
  btns(SUBJECTS,"sub",s=>subject(s[0]));document.getElementById("out").onclick=home;if(UID)document.getElementById("lo").onclick=()=>auth.signOut();document.getElementById("tp").onclick=planner;document.getElementById("tm").onclick=timer;
- {const go=document.getElementById("guideOpen");if(go)go.onclick=()=>typeof openGuide==="function"&&openGuide()}{const ch=document.getElementById("ch");if(ch)ch.onclick=()=>typeof openChallenge==="function"?openChallenge():toast("جاري تحميل التحدّي… جرّب بعد ثانية")}
+ {const go=document.getElementById("guideOpen");if(go)go.onclick=()=>typeof openGuide==="function"&&openGuide()}{const sp=document.getElementById("supOpen");if(sp)sp.onclick=()=>typeof openSupport==="function"&&openSupport()}{const ch=document.getElementById("ch");if(ch)ch.onclick=()=>typeof openChallenge==="function"?openChallenge():toast("جاري تحميل التحدّي… جرّب بعد ثانية")}
  if(typeof chPing==="function")chPing();
 }
 function subject(s){
@@ -361,11 +361,13 @@ function authScreen(mode){
  <button class="btn" id="ag">${up?"إنشاء الحساب":"دخول"}</button><div class="msg" id="am"></div>
  <button class="btn alt" id="as">${up?"عندي حساب – تسجيل الدخول":"إنشاء حساب جديد"}</button>
  <button class="btn alt" id="gd" style="margin-top:8px">📘 دليل الاستخدام</button>
+ <button class="btn alt" id="sa" style="margin-top:8px">🎧 الدعم الفني</button>
  ${up?"":`<button class="back" id="af" style="margin-top:8px">نسيت كلمة السر؟</button>`}`);
  const am=document.getElementById("am"),E=()=>document.getElementById("ae").value.trim(),P=()=>document.getElementById("ap").value;
  const err=e=>{am.textContent=AERR[e&&e.code]||("حدث خطأ ("+((e&&e.code)||"غير معروف")+")");am.style.color="var(--bad)"};
  document.getElementById("as").onclick=()=>authScreen(up?"in":"up");
  document.getElementById("gd").onclick=()=>typeof openGuide==="function"&&openGuide();
+ document.getElementById("sa").onclick=()=>typeof openSupport==="function"&&openSupport();
  const go=async()=>{const n=up?document.getElementById("an").value.trim():"";
   if(up&&!n){am.textContent="اكتب اسمك.";am.style.color="var(--bad)";return}
   if(!E()||!P()){am.textContent="اكتب البريد وكلمة السر.";am.style.color="var(--bad)";return}
@@ -387,4 +389,4 @@ function boot(){
 }
 
 /* ===== تحميل تلقائي لتحديثات الكيمياء وخطة الأيام السبعة (لا يحتاج تعديل ملفات HTML) ===== */
-(function(){["chem.js","plan7.js","stats.js","friends.js","guide_page.js","menu.js"].forEach(function(f){var s=document.createElement("script");s.src=f;s.async=false;(document.head||document.documentElement).appendChild(s)})})();
+(function(){["chem.js","plan7.js","stats.js","friends.js","guide_page.js","support_page.js","menu.js"].forEach(function(f){var s=document.createElement("script");s.src=f;s.async=false;(document.head||document.documentElement).appendChild(s)})})();

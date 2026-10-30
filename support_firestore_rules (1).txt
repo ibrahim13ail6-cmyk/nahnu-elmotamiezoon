@@ -1,0 +1,36 @@
+// ===== قواعد الدعم الفني =====
+// 1) حط دالة isAdmin جوه بلوك: match /databases/{database}/documents { ... } وأول حاجة فيه
+// 2) حط باقي الكود جواه، بعد القواعد الموجودة (من غير ما تمسح القديم)
+// 3) اضغط Publish
+
+function isAdmin() {
+  return request.auth != null
+    && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+}
+
+match /admins/{id} {
+  allow read: if request.auth != null && request.auth.uid == id;  // الأدمن يعرف إنه أدمن
+  allow write: if false;                                          // بتتضاف من Console بس
+}
+
+match /support/{uid} {
+  allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+  allow create, update: if request.auth != null && (request.auth.uid == uid || isAdmin());
+  allow delete: if false;
+
+  match /messages/{msgId} {
+    allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+    allow create: if request.auth != null && (
+         (request.auth.uid == uid
+           && request.resource.data.from == "student"
+           && request.resource.data.text is string
+           && request.resource.data.text.size() > 0
+           && request.resource.data.text.size() <= 2000)
+      || (isAdmin()
+           && request.resource.data.from == "admin"
+           && request.resource.data.text is string
+           && request.resource.data.text.size() > 0)
+    );
+    allow update, delete: if false;
+  }
+}
