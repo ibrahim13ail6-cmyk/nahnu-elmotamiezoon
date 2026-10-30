@@ -360,10 +360,12 @@ function authScreen(mode){
  <label for="ap">كلمة السر</label><input type="password" id="ap" dir="ltr" autocomplete="${up?"new-password":"current-password"}" placeholder="6 أحرف على الأقل">
  <button class="btn" id="ag">${up?"إنشاء الحساب":"دخول"}</button><div class="msg" id="am"></div>
  <button class="btn alt" id="as">${up?"عندي حساب – تسجيل الدخول":"إنشاء حساب جديد"}</button>
+ <button class="btn alt" id="gd" style="margin-top:8px">📘 دليل الاستخدام</button>
  ${up?"":`<button class="back" id="af" style="margin-top:8px">نسيت كلمة السر؟</button>`}`);
  const am=document.getElementById("am"),E=()=>document.getElementById("ae").value.trim(),P=()=>document.getElementById("ap").value;
  const err=e=>{am.textContent=AERR[e&&e.code]||("حدث خطأ ("+((e&&e.code)||"غير معروف")+")");am.style.color="var(--bad)"};
  document.getElementById("as").onclick=()=>authScreen(up?"in":"up");
+ document.getElementById("gd").onclick=()=>typeof openGuide==="function"&&openGuide();
  const go=async()=>{const n=up?document.getElementById("an").value.trim():"";
   if(up&&!n){am.textContent="اكتب اسمك.";am.style.color="var(--bad)";return}
   if(!E()||!P()){am.textContent="اكتب البريد وكلمة السر.";am.style.color="var(--bad)";return}
