@@ -137,6 +137,7 @@ function css(){
 .lbact button:disabled{opacity:.45;cursor:default}.lbact button:not(:disabled):active{transform:scale(.96)}
 .lbeq{display:block;direction:ltr;text-align:left;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:var(--card,#fff);border:1px solid var(--line,#ddd);border-radius:8px;padding:4px 8px;margin:4px 0;overflow-x:auto;white-space:nowrap}
 .lbtag{display:inline-block;font-size:11px;font-weight:800;border-radius:99px;padding:1px 8px;margin-inline-start:4px;color:#fff;background:#2f78c4}.lbtag.m{background:#d97706}
+textarea.lbin{padding:8px 12px;line-height:1.6;resize:vertical;width:100%;min-height:78px}
 .lbmsg{min-height:1.4em;font-size:13px;color:var(--mut,#667)}
 .lbsec{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border-radius:16px;border:2px solid var(--line,#ddd);background:var(--card,#fff);color:var(--ink,#123);font:inherit;text-align:right;cursor:pointer}
 .lbsec .ic{font-size:30px}.lbsec b{display:block;font-size:16px}.lbsec span{font-size:13px;color:var(--mut,#667);line-height:1.5}.lbsec:active{transform:scale(.98)}
@@ -191,9 +192,9 @@ const SALTS1=[
 const CONV=r=>Array.isArray(r)?{t:r[0],p:r[1],l:r[2],g:r[3],d:r[4],s:r[5]}:r;
 const SEC={
  1:{ic:"⚗️",title:"السكشن الأول: الكربونات والبيكربونات",desc:"تجربة أساسية (HCl) وتجارب تأكيدية بمعادلاتها، مع التسخين للتمييز بين الكربونات والبيكربونات.",RG:RG1,SALTS:SALTS1,key:"_1",
-    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول. ابدأ بالتجربة الأساسية ★ (HCl) ثم أكّد بالتجارب التأكيدية، وقارن بين الأنبوبتين. سخّن عند الحاجة، وأفرغ الأنبوبتين قبل كاشف جديد.",ph:"مثال: كربونات الصوديوم"},
+    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول. ابدأ بالتجربة الأساسية ★ (HCl) ثم أكّد بالتجارب التأكيدية، وقارن بين الأنبوبتين. سخّن عند الحاجة، وأفرغ الأنبوبتين قبل كاشف جديد. المعادلات والتفسير يظهران بعد تسليم الإجابة.",ph:"مثال: كربونات الصوديوم"},
  2:{ic:"🧫",title:"السكشن الثاني: كشف أملاح عامة",desc:"ملح مجهول من بنك أملاح متنوع (كلوريدات وكبريتات وأملاح الحديد والنحاس…) بستة كواشف.",RG:RG2,SALTS:SALTS2,key:"",
-    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول مختلف. جرّب الكواشف واحدًا بعد الآخر (أفرغ الأنبوبتين بين كل تجربة)، سجّل ملاحظاتك، ثم اكتب اسم كل ملح.",ph:"مثال: كلوريد الصوديوم"}
+    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول مختلف. جرّب الكواشف واحدًا بعد الآخر (أفرغ الأنبوبتين بين كل تجربة)، دوّن ملاحظاتك في المفكرة، ثم اكتب اسم كل ملح. سجل الملاحظات والمعادلات يظهر بعد تسليم الإجابة.",ph:"مثال: كلوريد الصوديوم"}
 };
 const loadS=sec=>{try{return Object.assign({n:0,ok:0},JSON.parse(localStorage.getItem(SK()+SEC[sec].key)||"{}"))}catch(e){return{n:0,ok:0}}};
 const saveS=(sec,o)=>{try{localStorage.setItem(SK()+SEC[sec].key,JSON.stringify(o))}catch(e){}};
@@ -230,10 +231,10 @@ function start(sec){
   <div class="lbrg" id="lbrg">${RG.map(r=>`<button class="lbrb" data-i="${r[0]}" aria-pressed="false"><span class="nu">${r[0]}</span><span class="nm">كاشف ${AR(r[0])}${r[4]==="أساسية"?" ★":""}</span><span class="fm">${r[1]}</span></button>`).join("")}</div>
   <div class="lbact"><button id="lbht" type="button" disabled>🔥 تسخين</button><button id="lbem" type="button" disabled>🗑️ إفراغ الأنبوبتين</button></div>
   <div class="lbmsg" id="lbmsg" aria-live="polite"></div>
-  <div class="lblg" id="lblg"><h4>📋 سجل الملاحظات</h4><span class="em">لم تجرِ أي تجربة بعد.</span></div>
+  <textarea class="lbin lbnote" id="lbnote" rows="3" placeholder="📝 مفكرتك: دوّن ملاحظاتك أثناء التجارب (لا تُصحَّح)"></textarea>
   <div class="lbans2">${[0,1].map(i=>`<label>${NM[i]}<input class="lbin" id="lbin${i}" placeholder="${E(C.ph)}" autocomplete="off"></label>`).join("")}</div>
   <button class="bt" id="lbok" type="button" style="margin:0">✅ الإجابة</button>
-  <div id="lbfb" aria-live="polite"></div><div class="lbrv" id="lbrv"></div>
+  <div id="lbfb" aria-live="polite"></div><div class="lblg" id="lblg" hidden></div><div class="lbrv" id="lbrv"></div>
   <div class="lbft"><span>نتيجتك المحفوظة: ${AR(S.ok)} من ${AR(S.n)}</span><button class="bt alt" id="lbnx" type="button" style="margin:0">التالي ⬅</button></div>
  </div>`;
  page(html,openLab);
@@ -255,8 +256,10 @@ function start(sec){
  }
  const eqs=a=>(a||[]).map(x=>`<code class="lbeq">${E(x)}</code>`).join("");
  function renderLog(){
+  if(!done)return;
   const ks=Object.keys(log).sort((a,b)=>a-b);
-  $("lblg").innerHTML="<h4>📋 سجل الملاحظات</h4><ul>"+ks.map(k=>{const g=RG[k-1],o=log[k];
+  $("lblg").hidden=false;
+  $("lblg").innerHTML="<h4>📋 سجل ملاحظاتك ومعادلاتها</h4><ul>"+ks.map(k=>{const g=RG[k-1],o=log[k];
    const tag=g[4]?`<span class="lbtag${g[4]==="أساسية"?"":" m"}">${E(g[4]==="أساسية"?"تجربة أساسية":g[4].replace("تأكيدية","تجربة تأكيدية"))}</span>`:"";
    return `<li><b>كاشف ${AR(k)} (${E(g[1])})</b>${tag}${[0,1].map(i=>{const x=o[i];if(!x)return"";
     return `<div class="lbo"><b>${NM[i]}:</b> ${E(x.t)}${eqs(x.e)}${x.h?`<div>🔥 <b>بالتسخين:</b> ${E(x.h.t)}${eqs(x.h.e)}</div>`:""}</div>`}).join("")}</li>`}).join("")+"</ul>";
@@ -305,6 +308,7 @@ function start(sec){
   h=`<b>النتيجة: ${AR(okN)} من ٢</b><br>`+h;
   if(tried<3)h+=`<br>💡 جرّبت ${AR(tried)} كواشف فقط؛ كلما جرّبت أكثر كان الاستنتاج أدق.`;
   fb.className="lbfb "+(okN===2?"ok":"no");fb.innerHTML=h;
+  if(tried)renderLog();else{$("lblg").hidden=false;$("lblg").innerHTML="<h4>📋 سجل الملاحظات</h4><span class=\"em\">لم تجرِ أي تجربة.</span>"}
   if(sec===1){
    $("lbrv").innerHTML=T.map((t,i)=>`<details><summary>📘 معادلات ${NM[i]} (${E(t.salt.n)})</summary><ul>`+RG.map(r=>{const x=CONV(t.salt.r[r[0]]);
     return `<li><b>${E(r[1])}:</b> ${E(x.t)}${eqs(x.e)}${x.h?`<div>🔥 ${E(x.h.t)}${eqs(x.h.e)}</div>`:""}</li>`}).join("")+`</ul></details>`).join("")+'<p class="lbleg">المعادلات المكتوبة «بالقياس» غير منصوص عليها في الملخص، وهي من قاعدة: «البيكربونات تتفاعل مثل الكربونات لكن بالتسخين».</p>';
