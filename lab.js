@@ -189,22 +189,71 @@ const SALTS1=[
    7:{...NOPPT,h:HEATPPT("Ca(HCO₃)₂ —(غليان)→ CaCO₃↓ + H₂O + CO₂↑")}},
   why:"فوران مع HCl لكن لا راسب مع MgSO₄ على البارد (يظهر بعد الغليان)، فالأنيون بيكربونات وليس كربونات."}
 ];
+
+/* ---------- بيانات السكشن الثاني: الكلوريد والبروميد (مجموعة H₂SO₄ المركز) ---------- */
+const RG3=[
+ [1,"H₂SO₄ المركز","ملح صلب","#f3e9b5","أساسية"],
+ [2,"نترات الفضة","AgNO₃","#cfe8f1","تأكيدية"],
+ [3,"AgNO₃ ثم NH₄OH","نشادر","#cfe8f1","تأكيدية"],
+ [4,"MnO₂ + H₂SO₄ مركز","","#d9d0c0","تأكيدية"],
+ [5,"أسيتات الرصاص","(CH₃COO)₂Pb","#cfe8f1","تأكيدية"],
+ [6,"ماء الكلور + CHCl₃","Cl₂","#e6f0c8","تأكيدية"]
+];
+const PBHEAT={t:"يذوب الراسب بالغليان (ويعود يترسب بالتبريد)",x:1,e:[]};
+const SALTS3=[
+ {n:"كلوريد الصوديوم",f:"NaCl",a:"بلورات بيضاء تذوب في الماء",sol:CLR,c:"صوديوم",an:"كلوريد",
+  k:["كلوريد الصوديوم","NaCl","ملح الطعام","كلوريد صوديوم","كلوريد"],
+  r:{
+   1:{t:"يتصاعد غاز عديم اللون نفّاذ الرائحة، وتتكوّن سحب بيضاء مع ساق مبللة بـ NH₄OH",g:1,e:["NaCl + H₂SO₄ → NaHSO₄ + HCl↑"],h:{t:"يزداد تصاعد الغاز النفّاذ",g:1,e:[]}},
+   2:{t:"راسب أبيض يتحوّل إلى البنفسجي بالضوء ولا يذوب في HNO₃ المخفف",p:"#fff",e:["NaCl + AgNO₃ → NaNO₃ + AgCl↓ (أبيض)"]},
+   3:{t:"يتكوّن راسب أبيض ثم يذوب بإضافة NH₄OH (ويترسب من جديد بإضافة HNO₃ المخفف)",p:"#fff",d:CLR,e:["NaCl + AgNO₃ → NaNO₃ + AgCl↓","AgCl + 2NH₄OH → [Ag(NH₃)₂]Cl + 2H₂O"]},
+   4:{t:"يتصاعد غاز أخضر مصفر نفّاذ الرائحة يُزيل لون ورقة عباد الشمس المبللة",g:1,bc:"#c9e04a",e:["2NaCl + MnO₂ + 3H₂SO₄ → 2NaHSO₄ + MnSO₄ + Cl₂↑ + 2H₂O (بالقياس)"]},
+   5:{t:"راسب أبيض يذوب بالغليان",p:"#fff",e:["2NaCl + (CH₃COO)₂Pb → PbCl₂↓ + 2CH₃COONa"],h:PBHEAT},
+   6:{t:"لا يتغيّر لون المحلول ولا تتلوّن طبقة الكلوروفورم"}},
+  why:"غاز نفّاذ عديم اللون مع H₂SO₄ المركز، وراسب أبيض مع AgNO₃ يذوب في NH₄OH، ولا تتلوّن طبقة الكلوروفورم بماء الكلور: كلوريد."},
+ {n:"بروميد البوتاسيوم",f:"KBr",a:"بلورات بيضاء تذوب في الماء",sol:CLR,c:"بوتاسيوم",an:"بروميد",
+  k:["بروميد البوتاسيوم","KBr","بروميد بوتاسيوم","بروميد"],
+  r:{
+   1:{t:"يتلوّن المحلول بالأحمر ويتصاعد بخار بني محمر مختلط ببخار HBr",l:"#f4a6a0",g:1,bc:"#b5531f",e:["KBr + H₂SO₄ → KHSO₄ + HBr","2HBr + H₂SO₄ → Br₂↑ + SO₂ + 2H₂O"],h:{t:"تزداد الأبخرة البنية المحمرة",g:1,bc:"#b5531f",e:[]}},
+   2:{t:"راسب أصفر باهت يسودّ في ضوء الشمس ولا يذوب في HNO₃ المخفف",p:"#f5e6a0",e:["KBr + AgNO₃ → KNO₃ + AgBr↓ (أصفر باهت)"]},
+   3:{t:"راسب أصفر باهت شحيح الذوبان في NH₄OH المخفف (يذوب في المركز)",p:"#f5e6a0",e:["AgBr + 2NH₄OH (مركزة) → [Ag(NH₃)₂]Br + 2H₂O"]},
+   4:{t:"أبخرة بنية محمرة أكثر كثافة تُزيل لون ورقة عباد الشمس المبللة",l:"#f4a6a0",g:1,bc:"#b5531f",e:["2KBr + MnO₂ + 3H₂SO₄ → Br₂↑ + 2KHSO₄ + MnSO₄ + 2H₂O"]},
+   5:{t:"راسب أبيض يذوب بالغليان ويعود يترسب بالتبريد",p:"#fff",e:["2KBr + (CH₃COO)₂Pb → PbBr₂↓ + 2CH₃COOK"],h:PBHEAT},
+   6:{t:"يتلوّن المحلول بالأحمر البرتقالي وتتلوّن طبقة الكلوروفورم السفلية بالأحمر",l:"#f2a257",p:"#d62828",e:["2KBr + Cl₂ → 2KCl + Br₂"]}},
+  why:"بخار بني محمر مع H₂SO₄ المركز، وراسب أصفر باهت مع AgNO₃، وطبقة كلوروفورم حمراء مع ماء الكلور: بروميد."}
+];
 const CONV=r=>Array.isArray(r)?{t:r[0],p:r[1],l:r[2],g:r[3],d:r[4],s:r[5]}:r;
 const SEC={
- 1:{ic:"⚗️",title:"السكشن الأول: الكربونات والبيكربونات",desc:"تجربة أساسية (HCl) وتجارب تأكيدية بمعادلاتها، مع التسخين للتمييز بين الكربونات والبيكربونات.",RG:RG1,SALTS:SALTS1,key:"_1",
-    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول. ابدأ بالتجربة الأساسية ★ (HCl) ثم أكّد بالتجارب التأكيدية، وقارن بين الأنبوبتين. سخّن عند الحاجة، وأفرغ الأنبوبتين قبل كاشف جديد. المعادلات والتفسير يظهران بعد تسليم الإجابة.",ph:"مثال: كربونات الصوديوم"},
- 2:{ic:"🧫",title:"السكشن الثاني: كشف أملاح عامة",desc:"ملح مجهول من بنك أملاح متنوع (كلوريدات وكبريتات وأملاح الحديد والنحاس…) بستة كواشف.",RG:RG2,SALTS:SALTS2,key:"",
+ 1:{ic:"⚗️",title:"السكشن الأول: الكربونات والبيكربونات",short:"السكشن الأول",desc:"تجربة أساسية (HCl) وتجارب تأكيدية بمعادلاتها، مع التسخين للتمييز بين الكربونات والبيكربونات.",RG:RG1,SALTS:SALTS1,key:"_1",eq:1,
+    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول. ابدأ بالتجربة الأساسية ★ (HCl) ثم أكّد بالتجارب التأكيدية، وقارن بين الأنبوبتين. سخّن عند الحاجة، وأفرغ الأنبوبتين قبل كاشف جديد. دوّن ملاحظاتك في المفكرة، والمعادلات والتفسير يظهران بعد تسليم الإجابة.",ph:"مثال: كربونات الصوديوم"},
+ 2:{ic:"🧂",title:"السكشن الثاني: الكلوريد والبروميد",short:"السكشن الثاني",desc:"مجموعة H₂SO₄ المركز: تجربة أساسية وتجارب تأكيدية (AgNO₃ وMnO₂ وأسيتات الرصاص وماء الكلور) للتمييز بين الكلوريد والبروميد.",RG:RG3,SALTS:SALTS3,key:"_2",eq:1,
+    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول. ابدأ بالتجربة الأساسية ★ (H₂SO₄ المركز على الملح الصلب) ثم أكّد بالتجارب التأكيدية، وقارن بين الأنبوبتين. أفرغ الأنبوبتين قبل كاشف جديد. دوّن ملاحظاتك في المفكرة، والمعادلات والتفسير يظهران بعد تسليم الإجابة.",ph:"مثال: كلوريد الصوديوم"},
+ 3:{ic:"🧫",title:"السكشن الثالث (إضافي): كشف أملاح عامة",short:"السكشن الثالث",desc:"ملحان مجهولان من بنك أملاح متنوع (كلوريدات وكبريتات وأملاح الحديد والنحاس…) بستة كواشف.",RG:RG2,SALTS:SALTS2,key:"",
     intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول مختلف. جرّب الكواشف واحدًا بعد الآخر (أفرغ الأنبوبتين بين كل تجربة)، دوّن ملاحظاتك في المفكرة، ثم اكتب اسم كل ملح. سجل الملاحظات والمعادلات يظهر بعد تسليم الإجابة.",ph:"مثال: كلوريد الصوديوم"}
 };
 const loadS=sec=>{try{return Object.assign({n:0,ok:0},JSON.parse(localStorage.getItem(SK()+SEC[sec].key)||"{}"))}catch(e){return{n:0,ok:0}}};
 const saveS=(sec,o)=>{try{localStorage.setItem(SK()+SEC[sec].key,JSON.stringify(o))}catch(e){}};
 
+const HK=()=>"agri_labh_"+((typeof UID!=="undefined"&&UID)||"guest");
+const getH=()=>{try{return JSON.parse(localStorage.getItem(HK())||"[]")}catch(e){return[]}};
+function addH(rec){try{const h=getH();h.push(rec);localStorage.setItem(HK(),JSON.stringify(h.slice(-100)))}catch(e){}
+ try{if(typeof cloudAttempt==="function"){window.__bonus=0;cloudAttempt("الكيمياء","🧪 معمل – "+SEC[rec.s].title,rec.ok,2)}}catch(e){}}
+function histPage(){
+ css();const h=getH().slice().reverse(),tot=h.reduce((a,x)=>a+x.ok,0),n=h.length*2;
+ page(`<div class="lb"><h2>📊 نتائجي المحفوظة</h2>
+  <p class="lbp">${h.length?`عدد المحاولات: ${AR(h.length)} • مجموع الدرجات: ${AR(tot)} من ${AR(n)} (${AR(Math.round(tot/n*100))}٪)`:"لم تحفظ أي نتيجة بعد. تُحفظ نتيجتك تلقائيًا عند الضغط على «الإجابة»."}</p>
+  ${h.map(x=>`<div class="lblg"><b>${E(SEC[x.s]?SEC[x.s].short:"")}</b> — <b style="color:${x.ok===2?"#16a34a":x.ok===1?"#d97706":"#b91c1c"}">${AR(x.ok)} من ٢</b><br><span class="em">${E(new Date(x.t).toLocaleString("ar-EG",{dateStyle:"medium",timeStyle:"short"}))} • ${E((x.a||[]).join(" + "))} • تجارب: ${AR(x.k||0)}</span></div>`).join("")}
+  </div>`,openLab);
+ window.scrollTo(0,0);
+}
 /* ---------- شاشة اختيار السكشن ---------- */
 function openLab(){
  css();
  page(`<div class="lb"><h2>🧪 امتحانات في المعمل</h2><p class="lbp">اختر السكشن، وسيعطيك ملحًا مجهولًا لتكشف عنه بالتجارب ثم تكتب اسمه.</p>
-  ${[1,2].map(i=>{const S=loadS(i);return `<button class="lbsec" data-s="${i}"><span class="ic">${SEC[i].ic}</span><div><b>${SEC[i].title}</b><span>${SEC[i].desc}<br>نتيجتك: ${AR(S.ok)} من ${AR(S.n)}</span></div></button>`}).join("")}</div>`,typeof subjects==="function"?subjects:null);
+  ${[1,2,3].map(i=>{const S=loadS(i);return `<button class="lbsec" data-s="${i}"><span class="ic">${SEC[i].ic}</span><div><b>${SEC[i].title}</b><span>${SEC[i].desc}<br>نتيجتك: ${AR(S.ok)} من ${AR(S.n)}</span></div></button>`}).join("")}
+  <button class="lbsec" id="lbhist"><span class="ic">📊</span><div><b>نتائجي المحفوظة</b><span>سجل محاولاتك ودرجاتك في المعمل</span></div></button></div>`,typeof subjects==="function"?subjects:null);
  document.querySelectorAll(".lbsec").forEach(b=>b.onclick=()=>start(+b.dataset.s));
+ const hb=document.getElementById("lbhist");if(hb)hb.onclick=histPage;
  window.scrollTo(0,0);
 }
 
@@ -227,7 +276,7 @@ function start(sec){
     <div class="lbst r"><div class="tw"><div class="lbt"><div class="f liq" id="lbrq" style="height:70%;background:#cfe8f1"></div></div></div></div></div>
    ${tube(0)}${tube(1)}
   </div></div>
-  ${sec===1?'<p class="lbleg">★ التجربة الأساسية • باقي الكواشف تأكيدية • الكاشف يُضاف إلى الأنبوبتين معًا</p>':'<p class="lbleg">الكاشف يُضاف إلى الأنبوبتين معًا لتقارن بينهما</p>'}
+  ${C.eq?'<p class="lbleg">★ التجربة الأساسية • باقي الكواشف تأكيدية • الكاشف يُضاف إلى الأنبوبتين معًا</p>':'<p class="lbleg">الكاشف يُضاف إلى الأنبوبتين معًا لتقارن بينهما</p>'}
   <div class="lbrg" id="lbrg">${RG.map(r=>`<button class="lbrb" data-i="${r[0]}" aria-pressed="false"><span class="nu">${r[0]}</span><span class="nm">كاشف ${AR(r[0])}${r[4]==="أساسية"?" ★":""}</span><span class="fm">${r[1]}</span></button>`).join("")}</div>
   <div class="lbact"><button id="lbht" type="button" disabled>🔥 تسخين</button><button id="lbem" type="button" disabled>🗑️ إفراغ الأنبوبتين</button></div>
   <div class="lbmsg" id="lbmsg" aria-live="polite"></div>
@@ -235,7 +284,7 @@ function start(sec){
   <div class="lbans2">${[0,1].map(i=>`<label>${NM[i]}<input class="lbin" id="lbin${i}" placeholder="${E(C.ph)}" autocomplete="off"></label>`).join("")}</div>
   <button class="bt" id="lbok" type="button" style="margin:0">✅ الإجابة</button>
   <div id="lbfb" aria-live="polite"></div><div class="lblg" id="lblg" hidden></div><div class="lbrv" id="lbrv"></div>
-  <div class="lbft"><span>نتيجتك المحفوظة: ${AR(S.ok)} من ${AR(S.n)}</span><button class="bt alt" id="lbnx" type="button" style="margin:0">التالي ⬅</button></div>
+  <div class="lbft"><span>نتيجتك المحفوظة في هذا السكشن: ${AR(S.ok)} من ${AR(S.n)}</span><button class="bt alt" id="lbnx" type="button" style="margin:0">التالي ⬅</button></div>
  </div>`;
  page(html,openLab);
  const $=id=>document.getElementById(id),msg=$("lbmsg"),rbs=()=>document.querySelectorAll(".lbrb");
@@ -243,14 +292,15 @@ function start(sec){
   return{salt:salts[i],st,tw:st.querySelector(".tw"),q:st.querySelector(".liq"),sd:st.querySelector(".sld"),cl:st.querySelector(".cl"),pp:st.querySelector(".ppt"),dp:st.querySelector(".lbdp"),dr:st.querySelector(".lbdr"),fl:st.querySelector(".fl")}});
  const reset=t=>{t.q.style.height="58%";t.q.style.background=t.salt.sol;t.sd.style.height=t.salt.solid?"26%":"0";t.pp.style.height="0";t.pp.style.opacity="0";t.tw.classList.remove("pour","shake");t.st.querySelectorAll(".bb").forEach(b=>b.remove())};
  T.forEach(reset);
- function bubbles(t,n,fast){const h=t.tw.clientHeight;for(let k=0;k<n;k++){const b=document.createElement("i"),z=3+Math.random()*4;b.className="bb";
+ function bubbles(t,n,fast,col){const h=t.tw.clientHeight;for(let k=0;k<n;k++){const b=document.createElement("i"),z=3+Math.random()*4;b.className="bb";if(col){b.style.background=col;b.style.borderColor=col}
   b.style.cssText=`left:${14+Math.random()*58}%;width:${z}px;height:${z}px;--sx:${(Math.random()*10-5).toFixed(1)}px;--rise:${-(h*.78).toFixed(0)}px;animation-duration:${(fast?.7:1)+Math.random()*.7}s;animation-delay:${(Math.random()*(fast?1.2:1.6)).toFixed(2)}s`;
   t.tw.querySelector(".lbt").appendChild(b);setTimeout(()=>b.remove(),3600)}}
  function show(r,t){
   if(r.l)t.q.style.background=r.l;
   if(r.p){t.pp.style.background=r.p;t.pp.style.transition="height 2.2s ease-out,opacity .4s";t.pp.style.height="30%";t.pp.style.opacity="1";
    if(!reduce){t.cl.style.background=r.p;t.cl.animate([{opacity:0},{opacity:.85,offset:.22},{opacity:.35,offset:.6},{opacity:0}],{duration:2300,easing:"ease-out"})}}
-  if(r.g)bubbles(t,r.g===1?26:r.g,false);
+  if(r.g)bubbles(t,r.g===1?26:r.g,false,r.bc);
+  if(r.x){t.pp.style.transition="height 1.2s ease,opacity .9s";t.pp.style.opacity="0";t.pp.style.height="0"}
   if(r.s)t.sd.style.height="0";
   if(r.d)setTimeout(()=>{t.pp.style.opacity="0";t.q.style.background=r.d},1500);
  }
@@ -297,7 +347,7 @@ function start(sec){
   if(done)return;
   const G=T.map((t,i)=>grade(t.salt,$("lbin"+i).value)),fb=$("lbfb");
   if(G.some(g=>g.empty)){fb.className="lbfb no";fb.textContent="اكتب اسم الملحين (أ و ب) ثم اضغط «الإجابة».";return}
-  done=true;const St=loadS(sec),okN=G.filter(g=>g.ok).length;St.n+=2;St.ok+=okN;saveS(sec,St);
+  done=true;const St=loadS(sec),okN=G.filter(g=>g.ok).length;St.n+=2;St.ok+=okN;saveS(sec,St);addH({s:sec,t:Date.now(),ok:okN,a:T.map(t=>t.salt.n),k:Object.keys(log).length});
   rbs().forEach(b=>b.disabled=true);$("lbok").disabled=true;[0,1].forEach(i=>$("lbin"+i).disabled=true);dis(true,true);
   const tried=Object.keys(log).length;
   let h=G.map((g,i)=>{const s=T[i].salt;let x;
@@ -305,11 +355,11 @@ function start(sec){
    else{const part=[g.an?"الأنيون صحيح":"",g.cat?"الكاتيون صحيح":""].filter(Boolean).join(" و");
     x=`❌ <b>${NM[i]}:</b> غير صحيح${part?" (لكن "+part+")":""}. الصحيح: <b>${E(s.n)}</b> (${s.f}).`}
    return x+`<br><span style="color:var(--mut,#667)">${E(s.why)}</span>`}).join("<hr style='border:0;border-top:1px solid var(--line,#ddd)'>");
-  h=`<b>النتيجة: ${AR(okN)} من ٢</b><br>`+h;
+  h=`<b>النتيجة: ${AR(okN)} من ٢</b> <span style="color:var(--mut,#667)">💾 تم حفظ النتيجة (على جهازك وفي حسابك إن كنت مسجّلًا)</span><br>`+h;
   if(tried<3)h+=`<br>💡 جرّبت ${AR(tried)} كواشف فقط؛ كلما جرّبت أكثر كان الاستنتاج أدق.`;
   fb.className="lbfb "+(okN===2?"ok":"no");fb.innerHTML=h;
   if(tried)renderLog();else{$("lblg").hidden=false;$("lblg").innerHTML="<h4>📋 سجل الملاحظات</h4><span class=\"em\">لم تجرِ أي تجربة.</span>"}
-  if(sec===1){
+  if(C.eq){
    $("lbrv").innerHTML=T.map((t,i)=>`<details><summary>📘 معادلات ${NM[i]} (${E(t.salt.n)})</summary><ul>`+RG.map(r=>{const x=CONV(t.salt.r[r[0]]);
     return `<li><b>${E(r[1])}:</b> ${E(x.t)}${eqs(x.e)}${x.h?`<div>🔥 ${E(x.h.t)}${eqs(x.h.e)}</div>`:""}</li>`}).join("")+`</ul></details>`).join("")+'<p class="lbleg">المعادلات المكتوبة «بالقياس» غير منصوص عليها في الملخص، وهي من قاعدة: «البيكربونات تتفاعل مثل الكربونات لكن بالتسخين».</p>';
   }
@@ -319,5 +369,5 @@ function start(sec){
  $("lbnx").onclick=()=>start(sec);
  window.scrollTo(0,0);
 }
-window.openLab=openLab;window.__labSalts=SALTS2.concat(SALTS1);
+window.openLab=openLab;window.__labSalts=SALTS2.concat(SALTS1,SALTS3);
 })();
