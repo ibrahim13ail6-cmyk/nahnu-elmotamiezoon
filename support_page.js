@@ -32,36 +32,45 @@
   const timer=setInterval(()=>{if(ok()){startBadgeWatch();clearInterval(timer)}},1500);
 
   /* ---------- الواجهة ---------- */
-  window.openSupport=async function(){
-    if(document.getElementById("supOv"))return;
-    const ov=mk("div",{id:"supOv"});
-    ov.style.cssText="position:fixed;inset:0;z-index:9999;background:var(--bg,#fff);display:flex;flex-direction:column;font-family:system-ui,Tahoma,sans-serif;color:var(--ink,#16324f)";
-    const bar=mk("div",{},ov);
-    bar.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:#1f4e79;color:#fff";
-    mk("b",{textContent:"🎧 الدعم الفني"},bar);
-    const close=mk("button",{textContent:"✕ إغلاق"},bar);
-    close.style.cssText="padding:6px 12px;border-radius:8px;border:0;cursor:pointer;font:inherit";
-    close.onclick=()=>{if(supUnsub){supUnsub();supUnsub=null}ov.remove()};
-    const body=mk("div",{},ov);
-    body.style.cssText="flex:1;display:flex;flex-direction:column;min-height:0;max-width:760px;width:100%;margin:auto";
-    ov.appendChild(body);
-    document.body.appendChild(ov);
+  window.openSupport=function(){
+    try{
+      if(document.getElementById("supOv"))return;
+      const ov=mk("div",{id:"supOv"});
+      ov.style.cssText="position:fixed;inset:0;z-index:9999;background:#f3f8fc;display:flex;flex-direction:column;font-family:system-ui,Tahoma,sans-serif;color:#16324f";
+      const bar=mk("div",{},ov);
+      bar.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:#1f4e79;color:#fff";
+      mk("b",{textContent:"🎧 الدعم الفني"},bar);
+      const close=mk("button",{textContent:"✕ إغلاق"},bar);
+      close.style.cssText="padding:6px 12px;border-radius:8px;border:0;cursor:pointer;font:inherit";
+      close.onclick=()=>{if(supUnsub){supUnsub();supUnsub=null}ov.remove()};
+      const body=mk("div",{},ov);
+      body.style.cssText="flex:1;display:flex;flex-direction:column;min-height:0;max-width:760px;width:100%;margin:auto";
+      const view=mk("div",{},body);
+      view.style.cssText="flex:1;display:flex;flex-direction:column;min-height:0";
+      document.body.appendChild(ov);
 
-    if(!ok()){body.textContent="سجّل الدخول الأول عشان تبعت رسالة للدعم.";return}
-    setBadge(0);localStorage.setItem(SEEN_KEY,String(Date.now()));
+      if(!ok()){
+        mk("p",{textContent:"سجّل الدخول الأول عشان تبعت رسالة للدعم."},view).style.cssText="text-align:center;padding:16px";
+        return;
+      }
+      setBadge(0);localStorage.setItem(SEEN_KEY,String(Date.now()));
+      studentView(view);   // الطالب يشوف الصفحة على طول
 
-    if(await checkAdmin()){
-      const tabs=mk("div",{},body);tabs.style.cssText="display:flex;gap:6px;padding:8px";
-      const tStu=mk("button",{textContent:"رسايلي"},tabs);
-      const tAdm=mk("button",{textContent:"📥 لوحة الدعم (أدمن)"},tabs);
-      const view=mk("div",{},body);view.style.cssText="flex:1;display:flex;flex-direction:column;min-height:0";
-      const show=m=>{tStu.classList.toggle("on",m==="s");tAdm.classList.toggle("on",m==="a");
-        if(m==="s")studentView(view);else adminView(view)};
-      tStu.onclick=()=>show("s");tAdm.onclick=()=>show("a");
-      show("a");
-    }else{
-      const view=mk("div",{},body);view.style.cssText="flex:1;display:flex;flex-direction:column;min-height:0";
-      studentView(view);
+      // لو أدمن، نضيف تبويبات الأدمن فوق
+      checkAdmin().then(isAdm=>{
+        if(!isAdm||!document.getElementById("supOv"))return;
+        const tabs=mk("div",{});
+        tabs.style.cssText="display:flex;gap:6px;padding:8px";
+        const tStu=mk("button",{textContent:"رسايلي"},tabs);
+        const tAdm=mk("button",{textContent:"📥 لوحة الدعم (أدمن)"},tabs);
+        body.insertBefore(tabs,view);
+        const show=m=>{tStu.classList.toggle("on",m==="s");tAdm.classList.toggle("on",m==="a");
+          if(m==="s")studentView(view);else adminView(view)};
+        tStu.onclick=()=>show("s");tAdm.onclick=()=>show("a");
+        show("a");
+      }).catch(()=>{});
+    }catch(e){
+      alert("خطأ في صفحة الدعم: "+(e&&e.message?e.message:e));
     }
   };
 
@@ -71,7 +80,7 @@
     const list=mk("div",{},root);list.style.cssText="flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px";
     const form=mk("div",{},root);form.style.cssText="display:flex;gap:6px;padding:8px;border-top:1px solid #ccc";
     const txt=mk("textarea",{placeholder:"اكتب رسالتك للدعم…",rows:2},form);
-    txt.style.cssText="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc;font:inherit;resize:none";
+    txt.style.cssText="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc;font:inherit;resize:none;background:#fff;color:#16324f";
     const send=mk("button",{textContent:"إرسال"},form);
     send.style.cssText="padding:8px 14px;border-radius:8px;border:0;background:#1f4e79;color:#fff;cursor:pointer;font:inherit";
     send.onclick=async()=>{
@@ -131,7 +140,7 @@
     const list=mk("div",{},root);list.style.cssText="flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px";
     const form=mk("div",{},root);form.style.cssText="display:flex;gap:6px;padding:8px;border-top:1px solid #ccc";
     const txt=mk("textarea",{placeholder:"اكتب الرد…",rows:2},form);
-    txt.style.cssText="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc;font:inherit;resize:none";
+    txt.style.cssText="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc;font:inherit;resize:none;background:#fff;color:#16324f";
     const send=mk("button",{textContent:"رد"},form);
     send.style.cssText="padding:8px 14px;border-radius:8px;border:0;background:#1f4e79;color:#fff;cursor:pointer;font:inherit";
     send.onclick=async()=>{
