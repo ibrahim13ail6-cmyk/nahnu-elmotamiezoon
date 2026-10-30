@@ -1,0 +1,26 @@
+// أضف الكود ده جوه نفس: match /databases/{database}/documents { ... }
+// (الدالة isAdmin لازم تكون جوه الـ documents block، وأول سطر فيه)
+
+function isAdmin() {
+  return request.auth != null
+    && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+}
+
+match /admins/{id} {
+  allow read, write: if false;   // بتتضاف يدوي من Firebase Console بس
+}
+
+match /support/{uid}/messages/{msgId} {
+  allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+  allow create: if request.auth != null && (
+       (request.auth.uid == uid
+         && request.resource.data.from == "student"
+         && request.resource.data.text is string
+         && request.resource.data.text.size() > 0
+         && request.resource.data.text.size() <= 2000)
+    || (isAdmin() && request.resource.data.from == "admin"
+         && request.resource.data.text is string
+         && request.resource.data.text.size() > 0)
+  );
+  allow update, delete: if false;
+}
