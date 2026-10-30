@@ -50,3 +50,6 @@
     ov.appendChild(bar);ov.appendChild(body);document.body.appendChild(ov);
   };
 })();
+
+/* الدعم الفني = نفس صفحة الدليل (قسم الواتساب فوق) */
+window.openSupport=function(){typeof window.openGuide==="function"&&window.openGuide()};
