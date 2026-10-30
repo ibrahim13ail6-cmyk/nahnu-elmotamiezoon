@@ -36,17 +36,17 @@
     try{
       if(document.getElementById("supOv"))return;
       const ov=mk("div",{id:"supOv"});
-      ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#f3f8fc;overflow-y:auto;font-family:system-ui,Tahoma,sans-serif;color:#16324f;font-size:16px";
+      ov.style.cssText="position:fixed;inset:0;z-index:9999;background:#f3f8fc;display:flex;flex-direction:column;font-family:system-ui,Tahoma,sans-serif;color:#16324f";
       const bar=mk("div",{},ov);
-      bar.style.cssText="position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:#1f4e79;color:#fff";
+      bar.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:#1f4e79;color:#fff";
       mk("b",{textContent:"🎧 الدعم الفني"},bar);
       const close=mk("button",{textContent:"✕ إغلاق"},bar);
       close.style.cssText="padding:6px 12px;border-radius:8px;border:0;cursor:pointer;font:inherit";
       close.onclick=()=>{if(supUnsub){supUnsub();supUnsub=null}ov.remove()};
       const body=mk("div",{},ov);
-      body.style.cssText="max-width:760px;width:100%;margin:0 auto;padding:8px";
+      body.style.cssText="flex:1;display:flex;flex-direction:column;min-height:0;max-width:760px;width:100%;margin:auto";
       const view=mk("div",{},body);
-      view.style.cssText="display:block";
+      view.style.cssText="flex:1;display:flex;flex-direction:column;min-height:0";
       document.body.appendChild(ov);
 
       if(!ok()){
@@ -54,7 +54,6 @@
         return;
       }
       setBadge(0);localStorage.setItem(SEEN_KEY,String(Date.now()));
-      mk("p",{textContent:"(نسخة الدعم 4) الصفحة اتفتحت"},view).style.cssText="font-size:12px;opacity:.6;margin:4px 0";
       studentView(view);   // الطالب يشوف الصفحة على طول
 
       // لو أدمن، نضيف تبويبات الأدمن فوق
@@ -78,8 +77,8 @@
   /* ---------- عرض الطالب ---------- */
   function studentView(root){
     root.innerHTML="";
-    const list=mk("div",{},root);list.style.cssText="padding:6px 4px;min-height:120px";
-    const form=mk("div",{},root);form.style.cssText="display:flex;gap:6px;padding:8px;border-top:1px solid #ccc;background:#f3f8fc";
+    const list=mk("div",{},root);list.style.cssText="flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px";
+    const form=mk("div",{},root);form.style.cssText="display:flex;gap:6px;padding:8px;border-top:1px solid #ccc";
     const txt=mk("textarea",{placeholder:"اكتب رسالتك للدعم…",rows:2},form);
     txt.style.cssText="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc;font:inherit;resize:none;background:#fff;color:#16324f";
     const send=mk("button",{textContent:"إرسال"},form);
@@ -107,7 +106,7 @@
 
   function bubble(parent,text,mine,time){
     const b=mk("div",{},parent);
-    b.style.cssText=`display:block;max-width:85%;margin:6px 0;${mine?"margin-right:auto":"margin-left:auto"};background:${mine?"#e3f2fd":"#e8f5e9"};padding:8px 10px;border-radius:10px;white-space:pre-wrap;line-height:1.6;color:#16324f`;
+    b.style.cssText=`max-width:85%;align-self:${mine?"flex-start":"flex-end"};background:${mine?"#e3f2fd":"#e8f5e9"};padding:8px 10px;border-radius:10px;white-space:pre-wrap;line-height:1.6`;
     mk("div",{textContent:text||""},b);
     mk("small",{textContent:(mine?"أنت":"الدعم")+" · "+time},b).style.opacity=".65";
   }
@@ -115,7 +114,7 @@
   /* ---------- لوحة الأدمن ---------- */
   function adminView(root){
     root.innerHTML="";
-    const list=mk("div",{},root);list.style.cssText="padding:6px 4px;min-height:120px";
+    const list=mk("div",{},root);list.style.cssText="flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px";
     if(supUnsub){supUnsub();supUnsub=null}
     supUnsub=D().collection("support").orderBy("lastAt","desc").limit(100).onSnapshot(snap=>{
       list.innerHTML="";
@@ -138,8 +137,8 @@
     const top=mk("div",{},root);top.style.cssText="display:flex;gap:6px;align-items:center;padding:8px";
     const back=mk("button",{textContent:"→ رجوع"},top);back.onclick=()=>adminView(root);
     mk("b",{textContent:name},top);
-    const list=mk("div",{},root);list.style.cssText="padding:6px 4px;min-height:120px";
-    const form=mk("div",{},root);form.style.cssText="display:flex;gap:6px;padding:8px;border-top:1px solid #ccc;background:#f3f8fc";
+    const list=mk("div",{},root);list.style.cssText="flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px";
+    const form=mk("div",{},root);form.style.cssText="display:flex;gap:6px;padding:8px;border-top:1px solid #ccc";
     const txt=mk("textarea",{placeholder:"اكتب الرد…",rows:2},form);
     txt.style.cssText="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc;font:inherit;resize:none;background:#fff;color:#16324f";
     const send=mk("button",{textContent:"رد"},form);
