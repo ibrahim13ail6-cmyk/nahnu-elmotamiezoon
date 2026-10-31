@@ -125,9 +125,12 @@ const ITEMS=[
  {ic:"🏆",t:"لوحة الأوائل",f:"board",run:()=>call("board","lb")},
  {ic:"📊",t:"إحصائياتي وتقريري",f:"openStats",run:()=>{typeof window.openStats==="function"&&window.openStats()}},
  {ic:"🗓️",t:"خطة الأيام السبعة",f:"openPlan7",run:()=>{typeof window.openPlan7==="function"&&window.openPlan7()}},
- {ic:"📘",t:"دليل الاستخدام",run:()=>{typeof window.openGuide==="function"&&window.openGuide()}},
-  {ic:"🎧",t:"الدعم الفني",run:()=>{typeof window.openSupport==="function"&&window.openSupport()}},
-  {ic:"⚔️",t:"تحدّي الأصحاب",f:"openChallenge",run:()=>{typeof window.openChallenge==="function"&&window.openChallenge()}},
+ {ic:"🧪",t:"امتحانات في المعمل",run:()=>{
+  if(typeof window.openLab==="function")return window.openLab();
+  const s=document.createElement("script");s.src="lab.js?v="+Date.now();
+  s.onload=()=>{typeof window.openLab==="function"&&window.openLab()};
+  s.onerror=()=>alert("ملف lab.js غير موجود على السيرفر. ارفعه في نفس مجلد المنصة (بجانب menu.js) ثم امسح الكاش.");
+  document.head.appendChild(s)}},
  {ic:"🌟",t:"خدماتنا",cls:"sv",chev:true,always:true,run:()=>openSv()},
  {ic:"🚪",t:"تسجيل الخروج",cls:"out",need:"uid",run:()=>{try{(0,eval)("auth").signOut()}catch(e){location.reload()}}}
 ];
@@ -161,5 +164,7 @@ function openSv(){sv.classList.remove("on");void sv.offsetWidth;sv.classList.add
 function closeAll(){sv.classList.remove("on");dr.classList.remove("on");ov.classList.remove("on");ham&&ham.classList.remove("open");ham&&ham.setAttribute("aria-expanded","false");document.body.style.overflow=""}
 function init(){build();cutLogo();paintTheme()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+/* تحميل قسم امتحانات المعمل تلقائيًا */
+if(!window.openLab&&!document.querySelector('script[src^="lab.js"]')){var _ls=document.createElement("script");_ls.src="lab.js?v=6";_ls.async=false;(document.head||document.documentElement).appendChild(_ls)}
 window.openMenu=()=>{build();openDr()};
 })();

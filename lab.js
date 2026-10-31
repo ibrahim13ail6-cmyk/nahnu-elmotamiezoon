@@ -350,6 +350,7 @@ function openLab(){
  css();
  page(`<div class="lb"><h2>🧪 امتحانات في المعمل</h2><p class="lbp">اختر السكشن، وسيعطيك ملحًا مجهولًا لتكشف عنه بالتجارب ثم تكتب اسمه.</p>
   ${[1,2,3,4,5].map(i=>{const S=loadS(i);return `<button class="lbsec" data-s="${i}"><span class="ic">${SEC[i].ic}</span><div><b>${SEC[i].title}</b><span>${SEC[i].desc}<br>نتيجتك: ${AR(S.ok)} من ${AR(S.n)}</span></div></button>`}).join("")}
+  <p class="lbleg" style="text-align:center">إصدار المعمل: ٥ سكاشن • ٣١/١٠/٢٠٢٦</p>
   <button class="lbsec" id="lbhist"><span class="ic">📊</span><div><b>نتائجي المحفوظة</b><span>سجل محاولاتك ودرجاتك في المعمل</span></div></button></div>`,typeof subjects==="function"?subjects:null);
  document.querySelectorAll(".lbsec").forEach(b=>b.onclick=()=>start(+b.dataset.s));
  const hb=document.getElementById("lbhist");if(hb)hb.onclick=histPage;
