@@ -166,7 +166,7 @@ function closeAll(){sv.classList.remove("on");dr.classList.remove("on");ov.class
 function init(){build();cutLogo();paintTheme()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 /* تحميل قسم امتحانات المعمل تلقائيًا */
-if(!window.__zooLoaded&&!document.querySelector('script[src^="zoo.js"]')){var _zs=document.createElement("script");_zs.src="zoo.js?v=1";_zs.async=false;(document.head||document.documentElement).appendChild(_zs)}
+if(!window.__zooLoaded&&!document.querySelector('script[src^="zoo.js"]')){var _zs=document.createElement("script");_zs.src="zoo.js?v=2";_zs.async=false;(document.head||document.documentElement).appendChild(_zs)}
 if(!window.openLab&&!document.querySelector('script[src^="lab.js"]')){var _ls=document.createElement("script");_ls.src="lab.js?v=6";_ls.async=false;(document.head||document.documentElement).appendChild(_ls)}
 window.openMenu=()=>{build();openDr()};
 })();
