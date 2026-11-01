@@ -137,16 +137,4 @@ if(typeof resultPDF==="function"&&typeof textPDF==="function"){const _p=resultPD
    if(EXPL[it.q])L.push(["التفسير: "+EXPL[it.q],26,0,"#1d4ed8",34]);
    L.push(["",12])});
   return textPDF(L)}}
-
-/* ---------- زر «امتحانات ميني تيرم» داخل مادة المحاصيل (بدل زر «الاختبارات») ---------- */
-const MT="امتحانات ميني تيرم";
-if(typeof subject==="function"){const _s=subject;
- subject=function(s){const r=_s.apply(this,arguments);
-  if(s===CRPS){try{const b=Array.from(((typeof app!=="undefined"&&app)||document).querySelectorAll(".opt")).find(x=>x.textContent.indexOf("الاختبارات")>=0);
-   if(b)b.innerHTML="<span>🧪</span>"+MT}catch(e){}}
-  return r}}
-if(typeof quizList==="function"){const _l=quizList;
- quizList=function(s){const r=_l.apply(this,arguments);
-  if(s===CRPS){try{const h=((typeof app!=="undefined"&&app)||document).querySelector("h2");if(h)h.textContent="🧪 "+MT+" – "+s}catch(e){}}
-  return r}}
 })();
