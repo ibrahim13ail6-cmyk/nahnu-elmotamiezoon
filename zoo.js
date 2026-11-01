@@ -8,10 +8,12 @@ var SEC = 60;   /* ثانية لكل سؤال */
 function drv(id){ return {view:"https://drive.google.com/file/d/" + id + "/view?usp=drivesdk", dl:"https://drive.google.com/uc?export=download&id=" + id}; }
 var D1 = drv("1LzV2aocSol88gYtVzpTcbQRIKX82y9Nq");
 var D2 = drv("1by-wCE4ep8WdpIfQxXG6SZgcClWxDP8y");
+var D3 = drv("139l4-PpKeRIvSXpXu2839d94KvWRTazK");
 
-/* ---------- 1) ملفات PDF في: حيوان زراعي ← السكاشن ← PDF ← السكشن 1 / 2 ---------- */
+/* ---------- 1) ملفات PDF في: حيوان زراعي ← السكاشن ← PDF ← السكشن 1 / 2 / 3 ---------- */
 FILES[S + "|sec|pdf|1"] = [{id: "zoo-s1-drive", name: "ملف السكشن الأول (PDF)", ext: D1.view, dl: D1.dl, sec: "الأول"}];
 FILES[S + "|sec|pdf|2"] = [{id: "zoo-s2-drive", name: "ملف السكشن الثاني (PDF)", ext: D2.view, dl: D2.dl, sec: "الثاني"}];
+FILES[S + "|sec|pdf|3"] = [{id: "zoo-s3-drive", name: "ملف السكشن الثالث (PDF)", ext: D3.view, dl: D3.dl, sec: "الثالث"}];
 
 var _viewer = viewer;
 viewer = function(f, back){
@@ -368,36 +370,29 @@ function T(title, ids, count){
   return [title, ids, ZB, count || 0, n * SEC];
 }
 var S1 = cat(IDX.mic, IDX.cell, IDX.tis);
-var P2 = cat(IDX.cls, IDX.clsN);
-var C2 = cat(IDX.inv.slice(0, 6), IDX.porN);
-var F2 = cat(IDX.inv.slice(6, 17), IDX.plaN);
-var A2 = cat(IDX.inv.slice(17), IDX.nemN);
-var ALL2 = cat(P2, C2, F2, A2);
-var S3 = cat(IDX.art, IDX.artN);
-var FS4 = cat(IDX.fish.slice(0, 8), IDX.fishN);
-var AM4 = cat(IDX.fish.slice(8), IDX.ampN);
-var BM4 = cat(IDX.bm, IDX.bmN);
-var ALL4 = cat(FS4, AM4, BM4);
+var S2 = cat(IDX.cls, IDX.clsN);                                   /* التصنيف والأوليات */
+var S3 = cat(IDX.inv.slice(0, 6), IDX.porN);                       /* الإسفنجيات والجوفمعويات */
+var S4 = cat(IDX.inv.slice(6, 17), IDX.plaN);                      /* الديدان المفلطحة */
+var S5 = cat(IDX.inv.slice(17, 19), IDX.nemN.slice(0, 9),          /* الاسطوانية + الحلقية */
+             IDX.inv.slice(19), IDX.nemN.slice(9));
+var S6 = cat(IDX.art, IDX.artN);                                   /* مفصليات الأرجل */
+var S7 = cat(IDX.fish, IDX.fishN, IDX.ampN);        /* الأسماك والبرمائيات */
+var S8 = cat(IDX.bm, IDX.bmN);                                     /* الطيور والثدييات */
+var ALL = cat(S1, S2, S3, S4, S5, S6, S7, S8);
 
 var NEW = [
   T("السكشن الأول – الميكروسكوب (موقوت)", IDX.mic),
   T("السكشن الأول – الخلية الحيوانية (موقوت)", IDX.cell),
   T("السكشن الأول – الأنسجة الحيوانية (موقوت)", IDX.tis),
   T("السكشن الأول – اختبار شامل (20 سؤالًا عشوائيًا · موقوت)", S1, 20),
-
-  T("السكشن الثاني – التصنيف والأوليات (موقوت)", P2),
-  T("السكشن الثاني – الإسفنجيات والجوفمعويات (موقوت)", C2),
-  T("السكشن الثاني – الديدان المفلطحة (موقوت)", F2),
-  T("السكشن الثاني – الديدان الاسطوانية والحلقية (موقوت)", A2),
-  T("السكشن الثاني – اختبار شامل (40 سؤالًا عشوائيًا · موقوت)", ALL2, 40),
-
-  T("السكشن الثالث – مفصليات الأرجل (موقوت)", S3),
-  T("السكشن الثالث – اختبار شامل (25 سؤالًا عشوائيًا · موقوت)", S3, 25),
-
-  T("السكشن الرابع – الأسماك (موقوت)", FS4),
-  T("السكشن الرابع – البرمائيات (موقوت)", AM4),
-  T("السكشن الرابع – الطيور والثدييات (موقوت)", BM4),
-  T("السكشن الرابع – اختبار شامل (30 سؤالًا عشوائيًا · موقوت)", ALL4, 30)
+  T("السكشن الثاني – التصنيف والأوليات (موقوت)", S2),
+  T("السكشن الثالث – الإسفنجيات والجوفمعويات (موقوت)", S3),
+  T("السكشن الرابع – الديدان المفلطحة (موقوت)", S4),
+  T("السكشن الخامس – الديدان الاسطوانية والحلقية (موقوت)", S5),
+  T("السكشن السادس – مفصليات الأرجل (موقوت)", S6),
+  T("السكشن السابع – الأسماك والبرمائيات (موقوت)", S7),
+  T("السكشن الثامن – الطيور والثدييات (موقوت)", S8),
+  T("اختبار شامل على المذكرة كلها (40 سؤالًا عشوائيًا · موقوت)", ALL, 40)
 ];
 QUIZZES[S] = (QUIZZES[S] || []).concat(NEW);
 window.__zooBank = ZB;
