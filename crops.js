@@ -88,7 +88,7 @@ const NTF=39,NALL=D.length;
 const rng=(a,b)=>Array.from({length:b-a},(_,i)=>a+i);
 const S=CRPSEC;
 
-QUIZZES[CRPS]=(QUIZZES[CRPS]||[]).concat([
+const MIDT=([
  ["اختبار صح وخطأ (1) – المحاضرات 1-6 (18 سؤالًا)",rng(0,18),BANK,0,18*S],
  ["اختبار صح وخطأ (2) – المحاضرات 1-6 (21 سؤالًا)",rng(18,NTF),BANK,0,21*S],
  ["اختبار الاختيار من متعدد (1) – المنشأ والتقسيم والعوامل (14 سؤالًا)",rng(NTF,NTF+14),BANK,0,14*S],
@@ -106,9 +106,11 @@ function keepSort(cmp){
   const fx=[],mv=[];a.forEach(x=>(FIX.test(x[0])?fx:mv).push(x));
   rawSort.call(mv,cmp);const out=mv.concat(fx);out.forEach((x,i)=>{a[i]=x});return a}
  return rawSort.call(a,cmp)}
+let inMid=false;
 if(typeof quiz==="function"){const _q=quiz;
- quiz=function(s){
-  if(s!==CRPS)return _q.apply(this,arguments);
+ quiz=function(s,qz){
+  if(s===CRPS)inMid=MIDT.indexOf(qz)>=0;
+  if(s!==CRPS||!inMid)return _q.apply(this,arguments);
   Array.prototype.sort=keepSort;
   try{return _q.apply(this,arguments)}finally{Array.prototype.sort=rawSort}}}
 
@@ -129,7 +131,7 @@ if(typeof result==="function"){const _r=result;
 /* ---------- إضافة التفسير في ملف النتيجة (PDF) ---------- */
 if(typeof resultPDF==="function"&&typeof textPDF==="function"){const _p=resultPDF;
  resultPDF=function(s,qz,items,ans,sc){
-  if(s!==CRPS)return _p.apply(this,arguments);
+  if(s!==CRPS||MIDT.indexOf(qz)<0)return _p.apply(this,arguments);
   const L=[["كلية الزراعة – نحن المتميزون",40,1,"#0f5a41"],[s+" – "+qz[0],32,1],["اسم الطالب: "+user,32,1],["الدرجة: "+sc+" / "+items.length,34,1,"#c2410c"],["",16]];
   items.forEach((it,i)=>{const ok=ans[i]>=0&&it.o[ans[i]][1],mine=ans[i]>=0?it.o[ans[i]][0]:"— لم تجب —";
    L.push([(i+1)+". "+it.q,30,1],["إجابتك: "+mine+(ok?"  ✓":"  ✗"),28,0,ok?"#15803d":"#b91c1c",34]);
@@ -138,15 +140,17 @@ if(typeof resultPDF==="function"&&typeof textPDF==="function"){const _p=resultPD
    L.push(["",12])});
   return textPDF(L)}}
 
-/* ---------- زر «امتحانات ميني تيرم» داخل مادة المحاصيل (بدل زر «الاختبارات») ---------- */
+/* ---------- زر «امتحانات ميني ترم» منفصل داخل مادة المحاصيل (الاختبارات العادية كما هي) ---------- */
 const MT="امتحانات ميني ترم";
-if(typeof subject==="function"){const _s=subject;
- subject=function(s){const r=_s.apply(this,arguments);
-  if(s===CRPS){try{const b=Array.from(((typeof app!=="undefined"&&app)||document).querySelectorAll(".opt")).find(x=>x.textContent.indexOf("الاختبارات")>=0);
-   if(b)b.innerHTML="<span>🧪</span>"+MT}catch(e){}}
+function midList(s){
+ page(`<h2>🧪 ${MT} – ${esc(s)}</h2><div class="list">${MIDT.map(q=>`<button class="opt">${esc(q[0])}<small>${q[3]||q[1].length} سؤال${q[4]?" · ⏱ "+Math.round(q[4]/60)+" د":""}</small></button>`).join("")}</div>`,()=>subject(s));
+ btns(MIDT,"opt",q=>quiz(s,q))}
+if(typeof subject==="function"&&typeof page==="function"&&typeof btns==="function"){const _s=subject;
+ subject=function(s){inMid=false;const r=_s.apply(this,arguments);
+  if(s===CRPS){try{
+   const box=(typeof app!=="undefined"&&app)||document,list=box.querySelector(".list");
+   if(list){const b=document.createElement("button");b.className="opt";b.innerHTML="<span>🧪</span>"+MT;b.onclick=()=>midList(s);list.appendChild(b)}}catch(e){}}
   return r}}
 if(typeof quizList==="function"){const _l=quizList;
- quizList=function(s){const r=_l.apply(this,arguments);
-  if(s===CRPS){try{const h=((typeof app!=="undefined"&&app)||document).querySelector("h2");if(h)h.textContent="🧪 "+MT+" – "+s}catch(e){}}
-  return r}}
+ quizList=function(s){if(s===CRPS&&inMid){midList(s);return}inMid=false;return _l.apply(this,arguments)}}
 })();
