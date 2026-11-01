@@ -14,18 +14,19 @@
     const body=document.createElement("div");
     body.style.cssText="flex:1;overflow:auto;padding:14px 18px;direction:rtl;text-align:right;line-height:1.8;font-family:system-ui,Tahoma,sans-serif;color:#16324f;max-width:760px;margin:auto;width:100%";
     body.innerHTML=HTML;
-    /* ===== زرار الدعم على واتساب (غيّر الرقم هنا بس) ===== */
-    const SUPPORT_WA="201158520769";   // ← حط رقم واتساب الدعم بكود الدولة من غير + أو مسافات
+    /* ===== زرار الدعم بالإيميل ===== */
+    const SUPPORT_EMAIL="ibrahim13ail6@gmail.com";   // ← إيميل الدعم أو مسافات
     const sup=document.createElement("button");
-    sup.textContent="💬 تواصل مع الدعم الفني على واتساب";
+    sup.textContent="📧 تواصل مع الدعم الفني بالإيميل";
     sup.style.cssText="display:block;width:100%;margin:0 0 14px;padding:12px;border-radius:10px;border:0;background:#25d366;color:#fff;font:inherit;font-weight:700;cursor:pointer";
     sup.onclick=()=>{
       let who="";try{who=localStorage.getItem("agri_name")||""}catch(e){}
-      const msg="مرحباً، محتاج مساعدة في المنصة"+(who?" – أنا "+who:"")+".";
-      window.open("https://wa.me/"+SUPPORT_WA+"?text="+encodeURIComponent(msg),"_blank");
+      const subj="طلب مساعدة من المنصة";
+      const body="مرحباً، محتاج مساعدة في المنصة"+(who?"\nالاسم: "+who:"")+"\n\n";
+      location.href="mailto:"+SUPPORT_EMAIL+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
     };
     body.insertBefore(sup,body.firstChild);
-    /* ===== خانة كتابة الرسالة: الطالب بيكتب هنا، وبيتبعت على واتساب الدعم ===== */
+    /* ===== خانة كتابة الرسالة: الطالب بيكتب هنا، وبتتفتح بالإيميل ===== */
     const box=document.createElement("div");
     box.style.cssText="margin:0 0 18px;padding:12px;border:1px solid #cfe0ee;border-radius:12px;background:#fff";
     const ttl=document.createElement("div");
@@ -35,14 +36,15 @@
     ta.rows=4;ta.placeholder="اكتب مشكلتك هنا…";ta.maxLength=1000;
     ta.style.cssText="width:100%;padding:10px;border-radius:8px;border:1px solid #cfe0ee;font:inherit;resize:vertical;background:#fff;color:#16324f;box-sizing:border-box";
     const sendBtn=document.createElement("button");
-    sendBtn.textContent="إرسال على واتساب";
+    sendBtn.textContent="إرسال بالإيميل";
     sendBtn.style.cssText="margin-top:8px;width:100%;padding:12px;border-radius:10px;border:0;background:#1f4e79;color:#fff;font:inherit;font-weight:700;cursor:pointer";
     sendBtn.onclick=()=>{
       const t=ta.value.trim();
       if(!t){ta.style.borderColor="#b71c1c";ta.focus();return}
       let who="";try{who=localStorage.getItem("agri_name")||""}catch(e){}
-      const msg="📩 رسالة دعم من المنصة"+(who?"\nالاسم: "+who:"")+"\n\n"+t;
-      window.open("https://wa.me/"+SUPPORT_WA+"?text="+encodeURIComponent(msg),"_blank");
+      const subj="رسالة دعم من المنصة"+(who?" – "+who:"");
+      const body=(who?"الاسم: "+who+"\n\n":"")+t;
+      location.href="mailto:"+SUPPORT_EMAIL+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
       ta.value="";
     };
     box.appendChild(ttl);box.appendChild(ta);box.appendChild(sendBtn);
@@ -51,5 +53,5 @@
   };
 })();
 
-/* الدعم الفني = نفس صفحة الدليل (قسم الواتساب فوق) */
+/* الدعم الفني = نفس صفحة الدليل (قسم الإيميل فوق) */
 window.openSupport=function(){typeof window.openGuide==="function"&&window.openGuide()};
