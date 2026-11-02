@@ -120,6 +120,7 @@
     s.list.forEach((q,i)=>{if(s.picks[i]===q.a)score++});
     const pct=Math.round(score/s.list.length*100);
     updateStats(s);
+    if(!s.saved){s.saved=true;saveAttempt(s,score)}
     mk("h2",{textContent:"النتيجة: "+score+" من "+s.list.length+" ("+pct+"%)"},b).style.color="#1f4e79";
     btn("🔁 إعادة نفس الاختبار",BTN_MAIN,b,()=>start(s.list,s.title));
     btn("📚 رجوع للمواضيع",BTN,b,subject);
@@ -150,6 +151,19 @@
     g.appendChild(t);
   }
   if(typeof MutationObserver!=="undefined"&&document.body){new MutationObserver(inject).observe(document.body,{childList:true,subtree:true});inject()}
+
+  /* ---------- تسجيل الدرجة في لوحة الأوائل (نفس طريقة الاختبارات العادية) ---------- */
+  function saveAttempt(s,score){
+    try{
+      window.__bonus=0;
+      const quiz="ميني ترم - "+s.title;
+      if(typeof cloudAttempt==="function"){
+        cloudAttempt("حيوان زراعي",quiz,score,s.list.length);
+      }else if(typeof db!=="undefined"&&db&&typeof UID!=="undefined"&&UID){
+        db.collection("users/"+UID+"/attempts").add({subject:"حيوان زراعي",quiz:quiz,score:score,total:s.list.length,bonus:0,at:(typeof SVT==="function"?SVT():new Date())}).catch(()=>{});
+      }
+    }catch(e){}
+  }
 
   function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
   function downloadReport(s,score,pct){
