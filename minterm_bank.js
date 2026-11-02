@@ -22,7 +22,7 @@
     document.body.appendChild(overlay);
     home();
   }
-  function close(){if(overlay){overlay.remove();overlay=null}}
+  function close(){clearTimer();if(overlay){overlay.remove();overlay=null}}
   const body=()=>document.getElementById("mtBody");
   function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
@@ -52,6 +52,7 @@
     t.onclick=fn;return t;
   }
   function home(){
+    clearTimer();
     const b=body();b.innerHTML="";
     mk("h2",{textContent:"اختار المادة"},b).style.cssText="color:#1f4e79;margin:4px 0 10px";
     const g=mk("div",{},b);
@@ -66,6 +67,7 @@
 
   /* ---------- داخل مادة حيوان زراعي: المواضيع ---------- */
   function subject(){
+    clearTimer();
     const b=body();b.innerHTML="";
     btn("← المواد","display:inline-block;width:auto;padding:8px 12px;border-radius:10px;border:1px solid #cfe0ee;background:#fff;color:#16324f;font:inherit;cursor:pointer",b,home);
     mk("h2",{textContent:"حيوان زراعي (نظري)"},b).style.cssText="color:#1f4e79;margin:8px 0 8px";
@@ -85,7 +87,22 @@
   }
 
   /* ---------- الاختبار ---------- */
-  function start(list,title){state={list,title,i:0,picks:[]};render()}
+  /* ---------- الوقت: دقيقة لكل سؤال، ومجموع واحد للاختبار كله ---------- */
+  function clearTimer(){if(state&&state.timer){clearInterval(state.timer);state.timer=null}}
+  function fmt(x){return Math.floor(x/60)+":"+String(x%60).padStart(2,"0")}
+  function tick(){
+    const s=state;if(!s||s.done)return;
+    const left=Math.max(0,s.total-Math.floor((Date.now()-s.startedAt)/1000));
+    const el=document.getElementById("mtTimer");
+    if(el)el.textContent="⏱ "+fmt(left);
+    if(left<=0){s.timeUp=true;clearTimer();review(body())}
+  }
+  function start(list,title){
+    clearTimer();
+    state={list,title,i:0,picks:[],startedAt:Date.now(),total:list.length*60,done:false,timer:null};
+    state.timer=setInterval(tick,1000);
+    render();
+  }
 
   function render(){
     const b=body();b.innerHTML="";
@@ -93,6 +110,8 @@
     const top=mk("div",{},b);top.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px";
     btn("← رجوع","display:inline-block;width:auto;padding:8px 12px;border-radius:10px;border:1px solid #cfe0ee;background:#fff;color:#16324f;font:inherit;cursor:pointer",top,subject);
     mk("small",{textContent:s.title+" · "+(s.i+1)+" / "+s.list.length},top);
+    const tmr=mk("b",{id:"mtTimer",textContent:"⏱ "+fmt(Math.max(0,s.total-Math.floor((Date.now()-s.startedAt)/1000)))},top);
+    tmr.style.cssText="color:#b71c1c;font-size:15px";
     const pb=mk("div",{},b);pb.style.cssText="height:8px;border-radius:6px;background:#d3e1ec;overflow:hidden;margin-bottom:12px";
     mk("i",{},pb).style.cssText="display:block;height:100%;background:#1f4e79;width:"+Math.round(s.i/s.list.length*100)+"%";
     if(s.i>=s.list.length)return review(b);
@@ -116,12 +135,16 @@
   /* ---------- المراجعة في الآخر: النتيجة + الإجابات + التفسير ---------- */
   function review(b){
     const s=state;
+    if(s.done)return;
+    s.done=true;clearTimer();
+    const used=Math.min(s.total,Math.floor((Date.now()-s.startedAt)/1000));
     let score=0;
     s.list.forEach((q,i)=>{if(s.picks[i]===q.a)score++});
     const pct=Math.round(score/s.list.length*100);
     updateStats(s);
-    if(!s.saved){s.saved=true;saveAttempt(s,score)}
+    if(!s.saved){s.saved=true;saveAttempt(s,score,used)}
     mk("h2",{textContent:"النتيجة: "+score+" من "+s.list.length+" ("+pct+"%)"},b).style.color="#1f4e79";
+    mk("p",{textContent:(s.timeUp?"⏰ انتهى الوقت · ":"")+"الوقت المستغرق: "+fmt(used)+" من "+fmt(s.total)},b);
     btn("🔁 إعادة نفس الاختبار",BTN_MAIN,b,()=>start(s.list,s.title));
     btn("📚 رجوع للمواضيع",BTN,b,subject);
     btn("⬇️ تنزيل الأسئلة والإجابات والأخطاء",BTN_MAIN+";background:#2e7d32",b,()=>downloadReport(s,score,pct));
@@ -153,14 +176,17 @@
   if(typeof MutationObserver!=="undefined"&&document.body){new MutationObserver(inject).observe(document.body,{childList:true,subtree:true});inject()}
 
   /* ---------- تسجيل الدرجة في لوحة الأوائل (نفس طريقة الاختبارات العادية) ---------- */
-  function saveAttempt(s,score){
+  function saveAttempt(s,score,used){
     try{
-      window.__bonus=0;
+      // مكافأة السرعة بنفس معادلة الاختبارات العادية: الصح × الوقت المتبقي ÷ الوقت الكلي
+      const left=Math.max(0,s.total-used);
+      const bonus=(s.total>0&&left>0)?Math.floor(score*left/s.total):0;
+      window.__bonus=bonus;
       const quiz="ميني ترم - "+s.title;
       if(typeof cloudAttempt==="function"){
         cloudAttempt("حيوان زراعي",quiz,score,s.list.length);
       }else if(typeof db!=="undefined"&&db&&typeof UID!=="undefined"&&UID){
-        db.collection("users/"+UID+"/attempts").add({subject:"حيوان زراعي",quiz:quiz,score:score,total:s.list.length,bonus:0,at:(typeof SVT==="function"?SVT():new Date())}).catch(()=>{});
+        db.collection("users/"+UID+"/attempts").add({subject:"حيوان زراعي",quiz:quiz,score:score,total:s.list.length,bonus:bonus,at:(typeof SVT==="function"?SVT():new Date())}).catch(()=>{});
       }
     }catch(e){}
   }
