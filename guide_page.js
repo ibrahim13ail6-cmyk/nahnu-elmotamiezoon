@@ -49,6 +49,7 @@
     };
     box.appendChild(ttl);box.appendChild(ta);box.appendChild(sendBtn);
     body.insertBefore(box,sup.nextSibling);
+
     ov.appendChild(bar);ov.appendChild(body);document.body.appendChild(ov);
   };
 })();
