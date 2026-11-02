@@ -44,10 +44,31 @@
   // نقطة ضعف = سؤال آخر إجابة عليه كانت غلط
   function weakQs(){const st=loadStats();return DATA.qs.filter(q=>st[q.n]&&st[q.n].last===false)}
 
-  /* ---------- الرئيسية ---------- */
+  /* ---------- الرئيسية: مربعات المواد ---------- */
+  function tile(parent,icon,text,fn){
+    const t=mk("button",{},parent);
+    t.style.cssText="aspect-ratio:1/1;border-radius:14px;border:1px solid #cfe0ee;background:#fff;color:#16324f;font:inherit;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:15px;padding:8px;text-align:center;box-sizing:border-box";
+    t.innerHTML='<span style="font-size:34px">'+icon+'</span><span>'+text+'</span>';
+    t.onclick=fn;return t;
+  }
   function home(){
     const b=body();b.innerHTML="";
-    mk("h2",{textContent:"حيوان زراعي (نظري)"},b).style.cssText="color:#1f4e79;margin:4px 0 8px";
+    mk("h2",{textContent:"اختار المادة"},b).style.cssText="color:#1f4e79;margin:4px 0 10px";
+    const g=mk("div",{},b);
+    g.style.cssText="display:grid;grid-template-columns:repeat(2,1fr);gap:10px";
+    tile(g,"🐄","حيوان زراعي (نظري)",subject);
+    const wk=weakQs().length;
+    tile(g,"🎯","نقاط ضعفي ("+wk+")",()=>{
+      if(!wk){alert("ما عندكش نقاط ضعف لسه. حل اختبار الأول.");return}
+      start(shuffle(weakQs()),"نقاط ضعفي");
+    });
+  }
+
+  /* ---------- داخل مادة حيوان زراعي: المواضيع ---------- */
+  function subject(){
+    const b=body();b.innerHTML="";
+    btn("← المواد","display:inline-block;width:auto;padding:8px 12px;border-radius:10px;border:1px solid #cfe0ee;background:#fff;color:#16324f;font:inherit;cursor:pointer",b,home);
+    mk("h2",{textContent:"حيوان زراعي (نظري)"},b).style.cssText="color:#1f4e79;margin:8px 0 8px";
     mk("p",{textContent:"اختار موضوع، أو ابدأ اختبار عشوائي. الإجابات والتفسير بيظهروا في آخر الاختبار."},b);
     const weak=weakQs();
     btn("🎯 نقاط ضعفي ("+weak.length+")",BTN_MAIN+(weak.length?"":";opacity:.5"),b,()=>{
@@ -70,7 +91,7 @@
     const b=body();b.innerHTML="";
     const s=state;
     const top=mk("div",{},b);top.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px";
-    btn("← رجوع","display:inline-block;width:auto;padding:8px 12px;border-radius:10px;border:1px solid #cfe0ee;background:#fff;color:#16324f;font:inherit;cursor:pointer",top,home);
+    btn("← رجوع","display:inline-block;width:auto;padding:8px 12px;border-radius:10px;border:1px solid #cfe0ee;background:#fff;color:#16324f;font:inherit;cursor:pointer",top,subject);
     mk("small",{textContent:s.title+" · "+(s.i+1)+" / "+s.list.length},top);
     const pb=mk("div",{},b);pb.style.cssText="height:8px;border-radius:6px;background:#d3e1ec;overflow:hidden;margin-bottom:12px";
     mk("i",{},pb).style.cssText="display:block;height:100%;background:#1f4e79;width:"+Math.round(s.i/s.list.length*100)+"%";
@@ -101,7 +122,7 @@
     updateStats(s);
     mk("h2",{textContent:"النتيجة: "+score+" من "+s.list.length+" ("+pct+"%)"},b).style.color="#1f4e79";
     btn("🔁 إعادة نفس الاختبار",BTN_MAIN,b,()=>start(s.list,s.title));
-    btn("📚 رجوع للمواضيع",BTN,b,home);
+    btn("📚 رجوع للمواضيع",BTN,b,subject);
     mk("h3",{textContent:"مراجعة الإجابات والتفسير"},b).style.margin="16px 0 6px";
     s.list.forEach((q,i)=>{
       const p=s.picks[i];const ok=p===q.a;
@@ -113,6 +134,21 @@
       mk("div",{textContent:"التفسير: "+q.e},card).style.cssText="margin-top:6px;line-height:1.7;background:#f3f8fc;padding:8px;border-radius:8px";
     });
   }
+
+  function inject(){
+    try{injectTile()}catch(e){}
+  }
+  function injectTile(){
+    const grids=[...document.querySelectorAll(".grid")];
+    const g=grids.find(x=>x.querySelector("button.sub")&&x.textContent.indexOf("حيوان")>=0);
+    if(!g||g.querySelector(".mt-tile"))return;
+    const t=document.createElement("button");
+    t.className="sub mt-tile";
+    t.innerHTML="<span>📚</span>بنك أسئلة ميني ترم";
+    t.onclick=open;
+    g.appendChild(t);
+  }
+  if(typeof MutationObserver!=="undefined"&&document.body){new MutationObserver(inject).observe(document.body,{childList:true,subtree:true});inject()}
 
   window.openMinterm=open;
 })();
