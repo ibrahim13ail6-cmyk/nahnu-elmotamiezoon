@@ -123,6 +123,7 @@
     mk("h2",{textContent:"النتيجة: "+score+" من "+s.list.length+" ("+pct+"%)"},b).style.color="#1f4e79";
     btn("🔁 إعادة نفس الاختبار",BTN_MAIN,b,()=>start(s.list,s.title));
     btn("📚 رجوع للمواضيع",BTN,b,subject);
+    btn("⬇️ تنزيل الأسئلة والإجابات والأخطاء",BTN_MAIN+";background:#2e7d32",b,()=>downloadReport(s,score,pct));
     mk("h3",{textContent:"مراجعة الإجابات والتفسير"},b).style.margin="16px 0 6px";
     s.list.forEach((q,i)=>{
       const p=s.picks[i];const ok=p===q.a;
@@ -149,6 +150,49 @@
     g.appendChild(t);
   }
   if(typeof MutationObserver!=="undefined"&&document.body){new MutationObserver(inject).observe(document.body,{childList:true,subtree:true});inject()}
+
+  function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+  function downloadReport(s,score,pct){
+    const date=new Date().toLocaleString("ar-EG");
+    const wrong=s.list.map((q,i)=>({q,i,p:s.picks[i]})).filter(x=>x.p!==x.q.a);
+    const row=(x)=>{
+      const q=x.q;
+      const opts=q.o.map((o,k)=>{
+        let mark="";
+        if(k===q.a)mark=" ✓ (الصحيحة)";
+        if(k===x.p&&k!==q.a)mark=" ✗ (إجابتك)";
+        const col=k===q.a?"#2e7d32":(k===x.p?"#b71c1c":"#16324f");
+        return '<li style="color:'+col+';font-weight:'+(mark?700:400)+'">'+L[k]+") "+esc(o)+esc(mark)+"</li>";
+      }).join("");
+      const st=x.p===undefined?"لم تُجب":(x.p===q.a?"صحيحة":"خاطئة");
+      return '<div class="card '+(x.p===q.a?"ok":"bad")+'">'
+        +'<div class="qh"><b>س'+(x.i+1)+':</b> '+esc(q.q)+' <span class="tag">'+esc(DIFF[q.d])+'</span></div>'
+        +'<ul>'+opts+'</ul>'
+        +'<div>إجابتك: <b>'+(x.p===undefined?"—":esc(L[x.p]+") "+q.o[x.p]))+'</b> — '+st+'</div>'
+        +'<div class="exp"><b>التفسير:</b> '+esc(q.e)+'</div></div>';
+    };
+    const all=s.list.map((q,i)=>row({q,i,p:s.picks[i]})).join("");
+    const errs=wrong.length?wrong.map(row).join(""):'<p>مفيش أخطاء، ممتاز! 🎉</p>';
+    const html='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+esc(s.title)+' - نتيجة الاختبار</title>'
+      +'<style>body{font-family:Tahoma,system-ui,sans-serif;color:#16324f;max-width:820px;margin:auto;padding:18px;line-height:1.7}'
+      +'h1{color:#1f4e79;font-size:22px}h2{color:#1f4e79;margin-top:26px;border-bottom:2px solid #cfe0ee;padding-bottom:4px}'
+      +'.card{border:1px solid #cfe0ee;border-right-width:6px;border-radius:10px;padding:10px 12px;margin:10px 0;page-break-inside:avoid}'
+      +'.card.ok{border-right-color:#2e7d32}.card.bad{border-right-color:#b71c1c}'
+      +'.tag{font-size:12px;background:#e3f2fd;color:#1f4e79;padding:1px 8px;border-radius:8px;margin-right:6px}'
+      +'.exp{background:#f3f8fc;padding:8px;border-radius:8px;margin-top:6px}ul{margin:6px 0;padding-right:20px;list-style:none}'
+      +'@media print{body{padding:0}button{display:none}}</style></head><body>'
+      +'<h1>📚 '+esc(s.title)+'</h1>'
+      +'<p>التاريخ: '+esc(date)+' · النتيجة: <b>'+score+' من '+s.list.length+' ('+pct+'%)</b> · الأخطاء: <b>'+wrong.length+'</b></p>'
+      +'<h2>❌ الأخطاء</h2>'+errs
+      +'<h2>📋 كل الأسئلة مع الإجابات والتفسير</h2>'+all
+      +'</body></html>';
+    const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download="نتيجة_"+(s.title||"اختبار").replace(/[\\/:*?"<>|]/g,"_")+".html";
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},1000);
+  }
 
   window.openMinterm=open;
 })();
