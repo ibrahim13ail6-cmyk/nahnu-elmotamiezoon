@@ -212,6 +212,10 @@ function openGame(o){
 function closeGame(){if(SYNC_UNSUB){try{SYNC_UNSUB()}catch(e){}SYNC_UNSUB=null}if(GW){GW.remove();GW=null;document.body.style.overflow=""}CTX=null}
 addEventListener("message",e=>{
   const d=e.data;if(!d||!d.ch||!GW||e.source!==GW.querySelector("iframe").contentWindow)return;
+  if(d.ch==="done"&&d.res&&ok()&&typeof cloudAttempt==="function"){
+    // نقاط التحدي بتتسجل في لوحة الأوائل (الإجابات الصح من إجمالي الأسئلة)
+    try{window.__bonus=0;cloudAttempt(d.res.subject||"حيوان زراعي","تحدّي الأصحاب"+(CTX&&CTX.friend?" - "+CTX.friend.name:""),+d.res.right||0,+d.res.total||0)}catch(err){}
+  }
   if(d.ch==="close")closeGame();
   else if(d.ch==="created"&&CTX&&CTX.friend&&ok()){const f=CTX.friend;
     sendInbox(f,{kind:"challenge",ch:d.code,subject:d.subject,count:d.count,seconds:d.seconds,qs:d.qs||null},"c_"+U()+"_"+Date.now()).then(ok2=>{if(ok2)say("تم إرسال التحدّي إلى "+f.name+" 🔔")})}
