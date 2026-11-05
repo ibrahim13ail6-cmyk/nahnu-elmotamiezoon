@@ -155,6 +155,22 @@
     btn("← المواد","display:inline-block;width:auto;padding:8px 12px;border-radius:10px;border:1px solid #cfe0ee;background:#fff;color:#16324f;font:inherit;cursor:pointer",b,home);
     mk("h2",{textContent:"نبات زراعي (نظري)"},b).style.cssText="color:#1f4e79;margin:8px 0 8px";
     mk("p",{textContent:"اختار موضوع، أو ابدأ اختبار عشوائي. الإجابات والتفسير بيظهروا في آخر الاختبار."},b);
+    /* ملخصات النبات على Google Drive: جنب الامتحانات */
+    const PLANT_SUMMARIES=[
+      {title:"📄 ملخص النبات (1)",id:"19OhdQNehb5rzyrVlBP_CpJr0ehzJ3EkB"},
+      {title:"📄 ملخص النبات (2)",id:"1lG6klisbgBeKseX9QrwIBokSMQyrt6EE"},
+      {title:"📄 ملخص النبات (3)",id:"1EhbwUDYHkJ12rXcxjLn0-HrMldgzBKFh"},
+      {title:"📄 ملخص النبات (4)",id:"1WLVpawq08DDPyt_WUGzRtpd_NSyejgx2"}
+    ];
+    const sumBox=mk("div",{},b);
+    sumBox.style.cssText="border:1px solid #cfe0ee;border-radius:12px;padding:10px;margin:10px 0;background:#fff";
+    mk("div",{textContent:"📄 ملخصات النبات"},sumBox).style.cssText="font-weight:700;margin-bottom:6px;color:#1f4e79";
+    PLANT_SUMMARIES.forEach(f=>{
+      const row=mk("div",{},sumBox);row.style.cssText="margin:8px 0;padding-top:6px;border-top:1px dashed #cfe0ee";
+      mk("div",{textContent:f.title},row).style.cssText="margin-bottom:4px";
+      link(row,"🔗 فتح","https://drive.google.com/file/d/"+f.id+"/view?usp=drivesdk",BTN_MAIN);
+      link(row,"⬇️ تحميل","https://drive.google.com/uc?export=download&id="+f.id,BTN);
+    });
     const weak=weakQs();
     btn("🎯 نقاط ضعفي ("+weak.length+")",BTN_MAIN+(weak.length?"":";opacity:.5"),b,()=>{
       if(!weak.length){alert("ما عندكش نقاط ضعف لسه. حل اختبار الأول.");return}
