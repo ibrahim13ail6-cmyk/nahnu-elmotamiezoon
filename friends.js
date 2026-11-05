@@ -39,6 +39,12 @@ st.textContent=`
 .fr-f>span,.fr-n>span{flex:1;font-weight:700;min-width:0;overflow-wrap:anywhere}
 .fr-f .fr-b,.fr-n .fr-b{flex:0 0 auto;min-height:40px}
 .fr-m{min-height:1.3em;margin-top:6px;font-weight:700;font-size:.92rem}
+.fr-f{flex-wrap:wrap}
+.fr-f>span{flex:1 1 100%;min-width:0;white-space:normal;word-break:break-word}
+.fr-f .fr-b{flex:1 1 auto;min-width:0;white-space:normal;text-align:center;font-size:.9rem;padding:6px 8px}
+.fr-f .fr-b.x{flex:0 0 44px}
+.fr-card{min-width:0;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+.fr-row>*{min-width:0}
 .fr-badge{margin-inline-start:auto;font-weight:800;color:#d97706}
 .fr-ov{position:fixed;inset:0;height:100%;height:100dvh;z-index:2000;background:#e4f3fa;overflow:hidden;overscroll-behavior:none}
 .fr-fr{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;touch-action:manipulation}
