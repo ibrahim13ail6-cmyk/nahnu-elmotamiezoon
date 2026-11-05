@@ -37,7 +37,7 @@ function home(){
 }
 function subjects(){
  page(`<h2>أهلًا ${esc(user)} 👋</h2><p class="welcome" style="margin:0">أهلًا بكم في الفرقة الأولى</p><p style="color:var(--mut);margin:4px 0 0">اختر المادة:</p>
- <button class="bk2" id="ch" style="margin-top:12px"><span>⚔️</span>تحدّي الأصحاب<small class="fr-badge"></small></button><button class="bk2" id="mtOpen" style="margin-top:8px"><span>📚</span>بنك أسئلة ميني ترم</button><button class="bk2" id="guideOpen" style="margin-top:8px"><span>📘</span>دليل الاستخدام</button><button class="bk2" id="supOpen" style="margin-top:8px"><span>🎧</span>الدعم الفني</button>
+ <button class="bk2" id="ch" style="margin-top:12px"><span>⚔️</span>تحدّي الأصحاب<small class="fr-badge"></small></button><button class="bk2" id="mtOpen" style="margin-top:8px"><span>📚</span>بنك أسئلة ميد ترم</button><button class="bk2" id="guideOpen" style="margin-top:8px"><span>📘</span>دليل الاستخدام</button><button class="bk2" id="supOpen" style="margin-top:8px"><span>🎧</span>الدعم الفني</button>
  <div class="grid">${SUBJECTS.map(s=>`<button class="sub"><span>${s[1]}</span>${s[0]}</button>`).join("")}</div>
  <button class="bk2" id="tp"><span>⏰</span>تنظيم الوقت</button><button class="bk2" id="tm"><span>🎯</span>مؤقت المذاكرة والإنجازات</button><button class="back" id="out" style="margin-top:14px">تغيير الاسم</button>${UID?`<button class="back" id="lo" style="margin-top:14px;margin-right:8px">🚪 تسجيل الخروج</button>`:""}`);
  btns(SUBJECTS,"sub",s=>subject(s[0]));document.getElementById("out").onclick=home;if(UID)document.getElementById("lo").onclick=()=>auth.signOut();document.getElementById("tp").onclick=planner;document.getElementById("tm").onclick=timer;
@@ -362,7 +362,7 @@ function authScreen(mode){
  <button class="btn alt" id="as">${up?"عندي حساب – تسجيل الدخول":"إنشاء حساب جديد"}</button>
  <button class="btn alt" id="gd" style="margin-top:8px">📘 دليل الاستخدام</button>
  <button class="btn alt" id="sa" style="margin-top:8px">🎧 الدعم الفني</button>
- <button class="btn alt" id="mta" style="margin-top:8px">📚 بنك أسئلة ميني ترم</button>
+ <button class="btn alt" id="mta" style="margin-top:8px">📚 بنك أسئلة ميد ترم</button>
  ${up?"":`<button class="back" id="af" style="margin-top:8px">نسيت كلمة السر؟</button>`}`);
  const am=document.getElementById("am"),E=()=>document.getElementById("ae").value.trim(),P=()=>document.getElementById("ap").value;
  const err=e=>{am.textContent=AERR[e&&e.code]||("حدث خطأ ("+((e&&e.code)||"غير معروف")+")");am.style.color="var(--bad)"};
