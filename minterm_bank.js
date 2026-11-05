@@ -343,5 +343,6 @@
     setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},1000);
   }
 
+  window.MT_DATA={animal:DATA,plant:PLANT};
   window.openMinterm=open;
 })();
