@@ -66,6 +66,7 @@
     tile(g,"🌿","نبات زراعي (نظري)",plantSubject);
     tile(g,"⚗️","الكيمياء غير العضوية",chemSubject);
     tile(g,"📐","الرياضة",mathSubject);
+    tile(g,"🧬","تصنيف الحيوان (لعبة)",treeGame);
     tile(g,"🌾","المحاصيل",crops);
     const wk=weakQs().length;
     tile(g,"🎯","نقاط ضعفي ("+wk+")",()=>{
@@ -452,6 +453,165 @@
     }catch(e){}
   }
 
+  /* ---------- لعبة تصنيف الحيوان: تعرف الكائن وشعبته بسرعة ---------- */
+  const PHYLA=["الطلائعيات: اللحميات (Sarcodina)","الطلائعيات: السوطيات (Mastigophora)","الطلائعيات: الهدبيات (Ciliophora)","الطلائعيات: البوغيات (Sporozoa)","الشعبة: الإسفنجيات (Porifera)","الشعبة: الجوفمعويات (Coelenterata)"];
+  const CLASSIFY=[
+    {a:"الأميبا (Amoeba)",p:0,h:"تتحرك بالأقدام الكاذبة"},
+    {a:"الزحار الأميبي (Entamoeba histolytica)",p:0,h:"تسبب الدوسنتاريا"},
+    {a:"التريبانوسوما (Trypanosoma)",p:1,h:"تسبب مرض النوم، ناقلها ذبابة تسي تسي"},
+    {a:"التريكوموناس (Trichomonas)",p:1,h:"لها أسواط وغشاء متموج"},
+    {a:"اليوجلينا (Euglena)",p:1,h:"فيها بلاستيدات للتمثيل الضوئي"},
+    {a:"الليشمانيا (Leishmania)",p:1,h:"تسبب الكالا أزار، ناقلها ذبابة الرمل"},
+    {a:"البراميسيوم (Paramecium)",p:2,h:"تتحرك بالأهداب"},
+    {a:"البلازموديوم (Plasmodium)",p:3,h:"تسبب الملاريا، ناقلها أنثى الأنوفيلس"},
+    {a:"الإيميريا (Eimeria)",p:3,h:"طفيلية، طورها البالغ بلا أعضاء حركة واضحة"},
+    {a:"إسفنج الاستحمام (Euspongia)",p:4,h:"ثابتة، لها ثقوب وقنوات للماء"},
+    {a:"الهيدرا (Hydra)",p:5,h:"لها خلايا لاسعة ولوامس حول الفم"}
+  ];
+  function animalGame(){
+    clearTimer();
+    const b=body();b.innerHTML="";
+    btn("← المواد",BACK,b,home);
+    mk("h2",{textContent:"🧬 لعبة تصنيف الحيوان"},b).style.cssText="color:#1f4e79;margin:8px 0 6px";
+    mk("p",{textContent:"اختار الشعبة أو المجموعة الصحيحة لكل كائن. كل إجابة صح بتزود نقطة."},b);
+    const hint=mk("p",{textContent:"اختار الشعبة اللي تحت دي"},b);
+    let rounds=shuffle(CLASSIFY).slice(0,8), idx=0, score=0;
+    const card=mk("div",{},b);
+    card.style.cssText="border:1px solid #cfe0ee;border-radius:12px;padding:12px;margin:10px 0;background:#fff;text-align:center";
+    const scoreEl=mk("div",{},b);
+    const opts=mk("div",{},b);
+    const fb=mk("div",{},b);fb.style.cssText="min-height:2.5em;font-weight:700;margin-top:8px";
+    function show(){
+      const r=rounds[idx];
+      scoreEl.textContent="النقاط: "+score+" / "+rounds.length+" · السؤال "+(idx+1);
+      card.innerHTML="";
+      mk("div",{textContent:r.a},card).style.cssText="font-size:20px;font-weight:700;color:#1f4e79";
+      fb.textContent="";
+      opts.innerHTML="";
+      shuffle(PHYLA.map((x,k)=>k)).forEach(k=>{
+        const x=btn(PHYLA[k],BTN,opts,()=>pick(k,x));
+        x.dataset.k=k;
+      });
+    }
+    function pick(k,el){
+      const r=rounds[idx];
+      const all=opts.querySelectorAll("button");
+      all.forEach(x=>x.disabled=true);
+      if(k===r.p){score++;el.style.background="#e8f5e9";el.style.borderColor="#2e7d32";fb.textContent="✅ صح! "+r.h;fb.style.color="#2e7d32"}
+      else{el.style.background="#ffebee";el.style.borderColor="#b71c1c";
+        all.forEach(x=>{if(+x.dataset.k===r.p){x.style.background="#e8f5e9";x.style.borderColor="#2e7d32"}});
+        fb.textContent="❌ الصح: "+PHYLA[r.p]+" — "+r.h;fb.style.color="#b71c1c"}
+      const nx=btn(idx+1<rounds.length?"التالي ⬅":"النتيجة ✓",BTN_MAIN,opts,()=>{
+        idx++;
+        if(idx<rounds.length)show();else finish();
+      });
+    }
+    function finish(){
+      card.innerHTML="";opts.innerHTML="";fb.textContent="";
+      mk("h2",{textContent:"النتيجة: "+score+" من "+rounds.length},card).style.color="#1f4e79";
+      btn("🔁 العب تاني",BTN_MAIN,card,()=>{rounds=shuffle(CLASSIFY).slice(0,8);idx=0;score=0;show()});
+      btn("📚 شجرة التصنيف",BTN,card,classTree);
+    }
+    show();
+  }
+  function classTree(){
+    const b=body();b.innerHTML="";
+    btn("← اللعبة",BACK,b,animalGame);
+    mk("h2",{textContent:"📚 شجرة التصنيف للحفظ"},b).style.cssText="color:#1f4e79;margin:8px 0";
+    const lines=[
+      "المملكة الحيوانية ← الشعب ← الطوائف ← الجنس ← النوع",
+      "الطلائعيات (وحيدة الخلية):",
+      "   • اللحميات (Sarcodina): الحركة بالأقدام الكاذبة (الأميبا)",
+      "   • السوطيات (Mastigophora): الحركة بالأسواط (التريبانوسوما، التريكوموناس، اليوجلينا)",
+      "   • الهدبيات (Ciliophora): الحركة بالأهداب (البراميسيوم)",
+      "   • البوغيات (Sporozoa): طفيلية (البلازموديوم، الإيميريا)",
+      "الإسفنجيات (Porifera): ثابتة، ثقوب وقنوات (إسفنج الاستحمام)",
+      "الجوفمعويات (Coelenterata): خلايا لاسعة (الهيدرا)"
+    ];
+    lines.forEach(t=>mk("p",{textContent:t},b).style.cssText="margin:6px 0;line-height:1.8");
+    btn("🎮 ابدأ اللعبة",BTN_MAIN,b,animalGame);
+  }
+
+  /* ---------- شجرة التصنيف التفاعلية: اللعبة بتسألك خطوة خطوة من المملكة للكائن ---------- */
+  const TREE=[
+    {n:"الطلائعيات (Protozoa)",h:"وحيدة الخلية",kids:[
+      {n:"اللحميات (Sarcodina)",h:"الحركة بالأقدام الكاذبة",ex:["الأميبا (Amoeba)","الزحار الأميبي (Entamoeba)"]},
+      {n:"السوطيات (Mastigophora)",h:"الحركة بسوط أو أكثر",ex:["التريبانوسوما (Trypanosoma)","التريكوموناس (Trichomonas)","اليوجلينا (Euglena)","الليشمانيا (Leishmania)"]},
+      {n:"الهدبيات (Ciliophora)",h:"الحركة بالأهداب",ex:["البراميسيوم (Paramecium)"]},
+      {n:"البوغيات (Sporozoa)",h:"طفيلية، بدون أعضاء حركة واضحة في الطور البالغ",ex:["البلازموديوم (Plasmodium)","الإيميريا (Eimeria)"]}
+    ]},
+    {n:"الإسفنجيات (Porifera)",h:"جسم فيه ثقوب وقنوات يمر منها الماء",kids:[
+      {n:"الإسفنجيات (Porifera)",h:"ثابتة، وتعتمد على الخلايا المطوقة",ex:["إسفنج الاستحمام (Euspongia)"]}
+    ]},
+    {n:"الجوفمعويات (Coelenterata)",h:"تناظر شعاعي وخلايا لاسعة",kids:[
+      {n:"الهيدروزوا (Hydrozoa)",h:"طائفة من الجوفمعويات",ex:["الهيدرا (Hydra)"]}
+    ]}
+  ];
+  const ALLEX=[];
+  TREE.forEach(ph=>ph.kids.forEach(c=>c.ex.forEach(e=>ALLEX.push({e,ph,c}))));
+  function treeGame(){
+    clearTimer();
+    const b=body();b.innerHTML="";
+    btn("← المواد",BACK,b,home);
+    mk("h2",{textContent:"🌳 شجرة التصنيف: اختار المسار صح"},b).style.cssText="color:#1f4e79;margin:8px 0 6px";
+    mk("p",{textContent:"المسار: المملكة الحيوانية ← الشعبة ← الطائفة ← الكائن. اختار خطوة بخطوة."},b);
+    let queue=shuffle(ALLEX).slice(0,8), qi=0, score=0;
+    const box=mk("div",{},b);
+    const sc=mk("div",{},b);sc.style.cssText="margin:8px 0;font-weight:700";
+    const fb=mk("div",{},b);fb.style.cssText="min-height:2.5em;margin-top:8px;font-weight:700";
+    function setScore(){sc.textContent="النقاط: "+score+" · الكائن "+(qi+1)+" من "+queue.length}
+    function opts(list,correctName,onOk){
+      const wrap=mk("div",{},box);
+      shuffle(list).forEach(name=>{
+        const x=btn(name,BTN,wrap,()=>{
+          const all=wrap.querySelectorAll("button");all.forEach(y=>y.disabled=true);
+          if(name===correctName){x.style.background="#e8f5e9";x.style.borderColor="#2e7d32";fb.textContent="✅ صح";fb.style.color="#2e7d32";setTimeout(onOk,600)}
+          else{x.style.background="#ffebee";x.style.borderColor="#b71c1c";
+            all.forEach(y=>{if(y.textContent===correctName){y.style.background="#e8f5e9";y.style.borderColor="#2e7d32"}});
+            fb.textContent="❌ الصح: "+correctName;fb.style.color="#b71c1c";setTimeout(onOk,1400)}
+        });
+      });
+      return wrap;
+    }
+    function step(){
+      box.innerHTML="";fb.textContent="";setScore();
+      if(qi>=queue.length)return finish();
+      const it=queue[qi];
+      const ex=it.e;
+      mk("div",{textContent:"الكائن: "+ex},box).style.cssText="font-size:20px;font-weight:700;color:#1f4e79;margin:6px 0";
+      mk("div",{textContent:"الخطوة 1: ينتمي لأي شعبة؟"},box).style.cssText="margin:6px 0";
+      let wrong=false;
+      opts(TREE.map(p=>p.n),it.ph.n,()=>{
+        const kids=it.ph.kids;
+        box.innerHTML="";
+        mk("div",{textContent:"الكائن: "+ex},box).style.cssText="font-size:20px;font-weight:700;color:#1f4e79;margin:6px 0";
+        if(kids.length>1){
+          mk("div",{textContent:"الخطوة 2: ينتمي لأي طائفة؟ (تلميح: "+it.c.h+")"},box).style.cssText="margin:6px 0";
+          opts(kids.map(k=>k.n),it.c.n,()=>{
+            box.innerHTML="";
+            mk("div",{textContent:"الكائن: "+ex},box).style.cssText="font-size:20px;font-weight:700;color:#1f4e79";
+            mk("div",{textContent:"المسار: "+it.ph.n+" ← "+it.c.n+" ← "+ex},box).style.cssText="margin:8px 0;line-height:1.8";
+            next();
+          });
+        }else{
+          mk("div",{textContent:"المسار: "+it.ph.n+" ← "+it.c.n+" ← "+ex},box).style.cssText="margin:8px 0;line-height:1.8";
+          next();
+        }
+      });
+    }
+    function next(){
+      const cur=queue[qi];
+      const go=btn(qi+1<queue.length?"الكائن التالي ⬅":"النتيجة ✓",BTN_MAIN,box,()=>{qi++;step()});
+      go.style.marginTop="10px";
+    }
+    function finish(){
+      box.innerHTML="";fb.textContent="";
+      mk("h2",{textContent:"النتيجة: "+score+" من "+queue.length},box).style.color="#1f4e79";
+      btn("🔁 العب تاني",BTN_MAIN,box,()=>{queue=shuffle(ALLEX).slice(0,8);qi=0;score=0;step()});
+      btn("📚 شجرة التصنيف كاملة",BTN,box,classTree);
+    }
+    step();
+  }
   function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
   function downloadReport(s,score,pct){
     const date=new Date().toLocaleString("ar-EG");
