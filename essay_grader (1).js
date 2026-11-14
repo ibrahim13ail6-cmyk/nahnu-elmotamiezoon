@@ -29,23 +29,90 @@
     pick();
   }
 
-  function pick() {
+  const SUBJECTS = [
+    { n: "الاقتصاد", e: "💰", essays: false },
+    { n: "حيوان زراعي", e: "🐄", essays: false },
+    { n: "نبات", e: "🌿", essays: false },
+    { n: "الكيمياء غير العضوية", e: "⚗️", essays: true },
+    { n: "محاصيل", e: "🌾", essays: false },
+    { n: "رياضة عامة", e: "📐", essays: false },
+    { n: "الحاسب الآلي", e: "💻", essays: false }
+  ];
+  const EXAM_SIZE = 5;   // كل امتحان = 5 أسئلة
+
+  function head(text) {
     const b = overlay.body; b.innerHTML = "";
-    mk("p", { textContent: "اختار سؤال مقالي، وبعدين ابدأ الامتحان واكتب إجابتك على ورقة، وارفع صورتها للتصحيح." }, b);
-    const list = questions();
-    if (!list.length) { mk("p", { textContent: "الأسئلة المقالية مش متاحة دلوقتي." }, b); return; }
-    list.forEach(q => {
-      const t = mk("button", { textContent: "س" + q.n + ": " + q.q.slice(0, 90) + (q.q.length > 90 ? "…" : "") }, b);
+    const top = mk("div", {}, b); top.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:8px";
+    return { b, top, title: text };
+  }
+  function backBtn(parent, label, fn) {
+    const bk = mk("button", { textContent: label }, parent);
+    bk.style.cssText = "padding:8px 12px;border-radius:8px;border:1px solid #cfe0ee;background:#fff;cursor:pointer;font:inherit";
+    bk.onclick = fn;
+    return bk;
+  }
+
+  // الصفحة الأولى: المواد السبع
+  function pick() {
+    clearInterval(timer);
+    const h = head("المواد");
+    const b = h.b;
+    mk("h3", { textContent: "اختار المادة" }, b).style.color = "#1f4e79";
+    SUBJECTS.forEach(sj => {
+      const t = mk("button", { textContent: sj.e + " " + sj.n + (sj.essays ? "" : " (قريباً)") }, b);
       t.style.cssText = BTN;
-      t.onclick = () => start(q);
+      t.onclick = () => sj.essays ? exams() : (alert("أسئلة " + sj.n + " المقالية هتتضاف قريباً."));
     });
   }
 
-  function start(q) {
+  // امتحانات الكيمياء
+  function exams() {
+    const h = head("الامتحانات");
+    const b = h.b;
+    backBtn(h.top, "← المواد", pick);
+    mk("h3", { textContent: "الكيمياء غير العضوية: الامتحانات" }, b).style.color = "#1f4e79";
+    const list = questions();
+    if (!list.length) { mk("p", { textContent: "الأسئلة المقالية مش متاحة دلوقتي." }, b); return; }
+    const count = Math.ceil(list.length / EXAM_SIZE);
+    for (let k = 0; k < count; k++) {
+      const part = list.slice(k * EXAM_SIZE, (k + 1) * EXAM_SIZE);
+      const t = mk("button", { textContent: "📝 الامتحان " + (k + 1) + " (" + part.length + " أسئلة)" }, b);
+      t.style.cssText = BTN;
+      t.onclick = () => examQuestions(k + 1, part);
+    }
+  }
+
+  // أسئلة الامتحان: كل سؤال بوقت وتصحيح ودرجة
+  function examQuestions(num, part) {
+    const h = head("الامتحان " + num);
+    const b = h.b;
+    backBtn(h.top, "← الامتحانات", exams);
+    mk("h3", { textContent: "الامتحان " + num + ": اختار السؤال" }, b).style.color = "#1f4e79";
+    const scoreLine = mk("p", { textContent: "مجموع النقاط: " + examScore(num) + " / " + (part.length * 10) }, b);
+    part.forEach(q => {
+      const done = examResults[num] && examResults[num][q.n];
+      const t = mk("button", { textContent: (done ? "✅ " : "") + "س" + q.n + ": " + q.q.slice(0, 80) + (q.q.length > 80 ? "…" : "") + (done ? " (" + done.score + "/" + done.max + ")" : "") }, b);
+      t.style.cssText = BTN;
+      t.onclick = () => start(q, num, part);
+    });
+  }
+
+  // نتايج الامتحانات في الذاكرة (تتصفّر لما تقفل الصفحة)
+  const examResults = {};
+  function examScore(num) {
+    const r = examResults[num] || {};
+    return Object.values(r).reduce((a, x) => a + (+x.score || 0), 0);
+  }
+  function saveResult(num, q, d) {
+    examResults[num] = examResults[num] || {};
+    examResults[num][q.n] = { score: d.score, max: d.max };
+  }
+
+  function start(q, num, part) {
     const b = overlay.body; b.innerHTML = "";
     const top = mk("div", {}, b); top.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:8px";
     const back = mk("button", { textContent: "← الأسئلة" }, top); back.style.cssText = "padding:8px 12px;border-radius:8px;border:1px solid #cfe0ee;background:#fff;cursor:pointer;font:inherit";
-    back.onclick = () => { clearInterval(timer); pick(); };
+    back.onclick = () => { clearInterval(timer); examQuestions(num, part); };
     const clock = mk("b", { textContent: "⏱ " + EXAM_MINUTES + ":00" }, top); clock.style.color = "#b71c1c";
     mk("div", { textContent: "س" + q.n + ": " + q.q }, b).style.cssText = "font-weight:700;line-height:1.8;background:#fff;padding:12px;border-radius:10px;border:1px solid #cfe0ee";
     mk("p", { textContent: "اكتب الإجابة على ورقة خارجية، وبعدين صوّرها وارفعها هنا." }, b);
@@ -55,14 +122,14 @@
       left--;
       const m = Math.floor(left / 60), s = String(left % 60).padStart(2, "0");
       clock.textContent = "⏱ " + m + ":" + s;
-      if (left <= 0) { clearInterval(timer); clock.textContent = "انتهى الوقت"; upload(q, true); }
+      if (left <= 0) { clearInterval(timer); clock.textContent = "انتهى الوقت"; upload(q, true, null, num); }
     }, 1000);
 
     const file = mk("input", { type: "file", accept: "image/*", capture: "environment" }, b);
     file.style.cssText = "display:block;margin:12px 0;width:100%";
     const go = mk("button", { textContent: "📤 ارفع الإجابة وصحّحها" }, b);
     go.style.cssText = BTN_MAIN;
-    go.onclick = () => upload(q, false, file);
+    go.onclick = () => upload(q, false, file, num);
     mk("div", {}, b).id = "gradeOut";
   }
 
@@ -75,7 +142,7 @@
     });
   }
 
-  async function upload(q, timeUp, fileInput) {
+  async function upload(q, timeUp, fileInput, num) {
     const out = document.getElementById("gradeOut");
     if (!out) return;
     const f = fileInput && fileInput.files && fileInput.files[0];
@@ -91,7 +158,9 @@
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "خطأ");
+      if (num) saveResult(num, q, data);
       show(out, data);
+      if (num) mk("p", { textContent: "مجموع نقاط الامتحان " + num + ": " + examScore(num) }, out).style.fontWeight = "700";
     } catch (e) {
       out.textContent = "❌ " + (e.message || "حصل خطأ، جرّب تاني");
       out.style.color = "#b71c1c";
@@ -113,14 +182,21 @@
     mk("p", { textContent: "ملحوظة: التصحيح بالذكاء الاصطناعي تقريبي، والمدرس هو المرجع النهائي." }, out).style.cssText = "font-size:13px;opacity:.7";
   }
 
-  // زرار ثابت في الشاشة الرئيسية (من غير ما نغيّر core.js)
-  function addButton() {
-    if (document.getElementById("essayGraderBtn")) return;
-    const btn = mk("button", { id: "essayGraderBtn", textContent: "🤖 تصحيح مقالي" }, document.body);
-    btn.style.cssText = "position:fixed;bottom:16px;left:16px;z-index:900;padding:10px 14px;border-radius:24px;border:0;background:#6a1b9a;color:#fff;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)";
-    btn.onclick = open;
+  // مربع "تصحيح مقالي" جنب المواد في الشاشة الرئيسية (زي مربع بنك الميد ترم)
+  function injectTile() {
+    const grids = [...document.querySelectorAll(".grid")];
+    const g = grids.find(x => x.querySelector("button.sub") && x.textContent.indexOf("حيوان") >= 0);
+    if (!g || g.querySelector(".essay-tile")) return;
+    const t = document.createElement("button");
+    t.className = "sub essay-tile";
+    t.innerHTML = "<span>🤖</span>تصحيح مقالي";
+    t.onclick = open;
+    g.appendChild(t);
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", addButton);
-  else addButton();
+  function tryInject() { try { injectTile(); } catch (e) {} }
+  if (typeof MutationObserver !== "undefined" && document.body) {
+    new MutationObserver(tryInject).observe(document.body, { childList: true, subtree: true });
+  }
+  tryInject();
   window.openEssayGrader = open;
 })();
