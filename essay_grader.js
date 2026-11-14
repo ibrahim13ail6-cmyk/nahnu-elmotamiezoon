@@ -156,8 +156,11 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image, mime: f.type, question: q.q, modelAnswer: q.m, maxScore: 10 })
       });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || "خطأ");
+      const raw = await r.text();
+      let data;
+      try { data = JSON.parse(raw); }
+      catch (err) { throw new Error("خدمة التصحيح مش متاحة. اتأكد إن ملف api/grade.js اترفع في مجلد api، وإن Vercel عمل نشر جديد."); }
+      if (!r.ok) throw new Error(data.error || "خطأ في التصحيح");
       if (num) saveResult(num, q, data);
       show(out, data);
       if (num) mk("p", { textContent: "مجموع نقاط الامتحان " + num + ": " + examScore(num) }, out).style.fontWeight = "700";
