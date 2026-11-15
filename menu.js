@@ -168,6 +168,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 /* تحميل قسم امتحانات المعمل تلقائيًا */
 if(!window.__zooLoaded&&!document.querySelector('script[src^="zoo.js"]')){var _zs=document.createElement("script");_zs.src="zoo.js?v=2";_zs.async=false;(document.head||document.documentElement).appendChild(_zs)}
 if(!window.openLab&&!document.querySelector('script[src^="lab.js"]')){var _ls=document.createElement("script");_ls.src="lab.js?v=6";_ls.async=false;(document.head||document.documentElement).appendChild(_ls)}
+if(!window.__cropsLoaded&&!document.querySelector('script[src^="crops.js"]')){var _cs=document.createElement("script");_cs.src="crops.js?v=3";_cs.async=false;(document.head||document.documentElement).appendChild(_cs)}
 window.openMenu=()=>{build();openDr()};
 })();
 
