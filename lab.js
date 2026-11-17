@@ -482,81 +482,162 @@ function start(sec){
  $("lbnx").onclick=()=>start(sec);
  window.scrollTo(0,0);
 }
-/* ---------- السكشن السادس: المعايرة بالسحاحة (محاكاة) ---------- */
+/* ---------- السكشن السادس: المعايرة بالسحاحة (محاكاة + تسجيل البيانات) ---------- */
 function titrLab(){
   css();
-  const EP_PHPH=5, EP_MO=10, NSTD=0.1, VSTD=10;
-  const SVG='<svg viewBox="0 0 300 330" style="width:100%;max-width:300px;display:block;margin:0 auto">'
-    +'<rect x="110" y="6" width="46" height="14" rx="4" fill="#9aa5b1" stroke="#555"/>'
-    +'<rect x="118" y="20" width="30" height="236" rx="3" fill="#eef4fa" stroke="#4a5a6a" stroke-width="2"/>'
-    +'<rect x="119" y="150" width="28" height="105" fill="#90caf9" opacity=".55"/>'
-    +'<path d="M118 256 L128 282 L138 282 L148 256 Z" fill="#eef4fa" stroke="#4a5a6a" stroke-width="2"/>'
-    +'<rect x="128" y="282" width="10" height="16" fill="#4a5a6a"/>'
-    +'<rect x="50" y="262" width="60" height="10" rx="3" fill="#7f8c99" stroke="#333"/>'
-    +'<rect x="78" y="252" width="8" height="30" fill="#c62828"/>'
-    +'<text x="212" y="60" font-size="11" fill="#1f4e79">رأس السحاحة</text><line x1="164" y1="14" x2="208" y2="56" stroke="#1f4e79"/>'
-    +'<text x="212" y="130" font-size="11" fill="#1f4e79">المدرج (ml)</text><line x1="148" y1="120" x2="208" y2="126" stroke="#1f4e79"/>'
-    +'<text x="212" y="176" font-size="11" fill="#1f4e79">المحلول القياسي</text><line x1="148" y1="170" x2="208" y2="172" stroke="#1f4e79"/>'
-    +'<text x="212" y="226" font-size="11" fill="#1f4e79">الحنفية (Stopcock)</text><line x1="110" y1="266" x2="208" y2="230" stroke="#1f4e79"/>'
-    +'<text x="212" y="290" font-size="11" fill="#1f4e79">الفوهة (Tip)</text><line x1="146" y1="278" x2="208" y2="288" stroke="#1f4e79"/>'
-    +'</svg>';
+  const EP_PHPH=5, EP_MO=10, NSTD=0.1, VSTD=10, BMAX=50, MW_HCL=36.5;
+  if(!document.getElementById("tcss")){
+    const t=document.createElement("style");t.id="tcss";
+    t.textContent=`
+.tRig{position:relative;display:flex;flex-direction:column;align-items:center;padding:6px 0 0}
+.tBur{width:190px;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.18))}
+.tBurLiq{transition:y .35s ease,height .35s ease}
+.tFlaskWrap{position:relative;width:190px;margin-top:-8px;transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .6s ease}
+.tFlaskWrap.away{transform:translateX(190px);opacity:.45}
+.tFLiq{transition:fill .9s ease}
+.tDrop{position:absolute;left:50%;top:-6px;width:10px;height:14px;margin-left:-5px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 35% 30%,#e3f2fd,#42a5f5 60%,#1565c0);opacity:0;pointer-events:none}
+.tDrop.fall{animation:tFall .55s cubic-bezier(.5,0,.9,.4) forwards}
+@keyframes tFall{0%{opacity:0;transform:translateY(0) scale(.7,1.2)}15%{opacity:1}100%{opacity:0;transform:translateY(120px) scale(1,1)}}
+.tRead{font-weight:700;color:#1f4e79;text-align:center;margin-top:8px;line-height:1.9}
+.tCard{background:linear-gradient(180deg,#f7fbff,#eaf4fb);border:1px solid #cfe0ee;border-radius:18px;padding:14px 8px 10px;box-shadow:inset 0 -18px 30px rgba(31,78,121,.06)}
+.tForm{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tForm label{font-size:13px;color:#1f4e79;font-weight:700}
+.tForm input{width:100%;padding:8px;border-radius:10px;border:1px solid #cfe0ee;font:inherit;box-sizing:border-box;direction:ltr;text-align:center}
+@media (max-width:480px){.tForm{grid-template-columns:1fr}}`;
+    document.head.appendChild(t);
+  }
+  const SVG_BUR=`
+<svg class="tBur" viewBox="0 0 200 270" role="img" aria-label="السحاحة">
+ <defs>
+  <linearGradient id="tGlass" x1="0" x2="1"><stop offset="0" stop-color="#dfe9f1"/><stop offset=".35" stop-color="#ffffff"/><stop offset=".7" stop-color="#e7eef5"/><stop offset="1" stop-color="#cfdbe6"/></linearGradient>
+  <linearGradient id="tLiqB" x1="0" x2="1"><stop offset="0" stop-color="#64b5f6"/><stop offset=".5" stop-color="#90caf9"/><stop offset="1" stop-color="#42a5f5"/></linearGradient>
+  <linearGradient id="tMetal" x1="0" x2="1"><stop offset="0" stop-color="#7f8c99"/><stop offset=".5" stop-color="#c9d3dc"/><stop offset="1" stop-color="#6b7785"/></linearGradient>
+ </defs>
+ <rect x="76" y="3" width="48" height="14" rx="5" fill="url(#tMetal)" stroke="#55606b"/>
+ <rect x="84" y="15" width="32" height="202" rx="4" fill="url(#tGlass)" stroke="#5b6b7b" stroke-width="2"/>
+ <rect id="tBurLiq" class="tBurLiq" x="86" y="17" width="28" height="0" rx="2" fill="url(#tLiqB)" opacity=".85"/>
+ ${[30,50,70,90,110,130,150,170,190,210].map((y,k)=>`<line x1="84" y1="${y}" x2="${k%2===0?97:92}" y2="${y}" stroke="#2b3a48" stroke-width="1"/>`+(k%2===0?`<text x="79" y="${y+3}" font-size="8.5" fill="#2b3a48" text-anchor="end">${(k+1)*5}</text>`:"")).join("")}
+ <path d="M84 217 L92 240 L108 240 L116 217 Z" fill="url(#tGlass)" stroke="#5b6b7b" stroke-width="2"/>
+ <rect x="94" y="240" width="12" height="14" rx="2" fill="url(#tMetal)"/>
+ <rect x="56" y="206" width="54" height="12" rx="6" fill="url(#tMetal)" stroke="#444"/>
+ <rect x="82" y="194" width="8" height="26" rx="3" fill="#d32f2f"/>
+ <g font-size="9.5" fill="#1f4e79"><text x="146" y="46">رأس السحاحة</text><line x1="124" y1="12" x2="142" y2="42" stroke="#1f4e79"/>
+ <text x="146" y="124">المدرج (ml)</text><line x1="116" y1="118" x2="142" y2="120" stroke="#1f4e79"/>
+ <text x="146" y="212">الحنفية</text><line x1="110" y1="212" x2="142" y2="208" stroke="#1f4e79"/>
+ <text x="146" y="252">الفوهة</text><line x1="108" y1="250" x2="142" y2="248" stroke="#1f4e79"/></g>
+</svg>`;
+  const SVG_FL=`
+<svg viewBox="0 0 190 150" style="width:190px;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.18))" role="img" aria-label="دورق مخروطي">
+ <defs>
+  <clipPath id="tFc"><path d="M72 4 H118 V48 L172 132 Q177 144 163 144 H27 Q13 144 18 132 L72 48 Z"/></clipPath>
+  <linearGradient id="tGl2" x1="0" x2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".4" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#ffffff" stop-opacity=".25"/></linearGradient>
+ </defs>
+ <rect id="tFLiq" class="tFLiq" x="0" y="0" width="190" height="150" fill="#eef4fa" clip-path="url(#tFc)"/>
+ <path d="M72 4 H118 V48 L172 132 Q177 144 163 144 H27 Q13 144 18 132 L72 48 Z" fill="url(#tGl2)" stroke="#5b6b7b" stroke-width="2.5"/>
+ <text x="95" y="138" font-size="10" fill="#1f4e79" text-anchor="middle">Na₂CO₃ · 10 مل</text>
+</svg>`;
   page('<div class="lb"><h2>🧪 السكشن السادس: المعايرة بالسحاحة</h2>'
-    +'<p class="lbp">اتبع الخطوات: املا السحاحة، ضع المادة والكاشف في الدورق، ثم نقط. التنقيط بيقف لوحده أول ما اللون يتغير.</p>'
+    +'<p class="lbp">السحاحة فوق، والدورق جنبها. اتبع الخطوات، والتنقيط بيقف لوحده أول ما اللون يتغير. بعدها تسجّل بياناتك.</p>'
     +'<div id="tSteps" class="lbp"></div>'
-    +'<div style="background:#fff;border:1px solid #cfe0ee;border-radius:12px;padding:12px;text-align:center">'+SVG
-    +'<div id="tBeaker" style="width:130px;height:130px;margin:8px auto;border:3px solid #4a5a6a;border-top:none;border-radius:0 0 24px 24px;transition:background .3s"></div>'
-    +'<div id="tRead" style="font-weight:700;color:#1f4e79;margin-top:6px;line-height:1.9"></div></div>'
-    +'<div id="tMsg" style="min-height:2.8em;font-weight:700;line-height:1.8"></div>'
-    +'<div id="tCtl"></div></div>', openLab);
+    +'<div class="tCard"><div class="tRig">'+SVG_BUR
+    +'<div class="tFlaskWrap away" id="tFW">'+SVG_FL+'<div class="tDrop" id="tDrop"></div></div></div>'
+    +'<div id="tRead" class="tRead"></div></div>'
+    +'<div id="tMsg" style="min-height:2.8em;font-weight:700;line-height:1.8;text-align:center"></div>'
+    +'<div id="tCtl"></div><div id="tRes"></div></div>', openLab);
   const $=id=>document.getElementById(id);
-  const st={filled:false,flask:false,ind:null,vol:0,running:false,done:false,last:null,timer:null};
+  const st={filled:false,flask:false,ind:null,vol:0,running:false,done:false,last:null,timer:null,placed:false,endV:0};
   const pHAt=v=>v<=EP_PHPH?11.5-(11.5-8.3)*(v/EP_PHPH):v<=EP_MO?8.3-(8.3-3.8)*((v-EP_PHPH)/(EP_MO-EP_PHPH)):Math.max(2.5,3.8-(v-EP_MO)*0.5);
   const colorOf=(ind,p)=>ind==="phph"?(p>8.3?"#f48fb1":"#eef4fa"):(p>4.4?"#ffe066":p>3.1?"#ff9800":"#e53935");
   const cur=()=>st.flask&&st.ind?colorOf(st.ind,pHAt(st.vol)):"#eef4fa";
-  const btn=(text,fn)=>{const x=document.createElement("button");x.textContent=text;x.className="btn";x.style.margin="6px 0";x.onclick=fn;$("tCtl").appendChild(x);return x};
+  function burLevel(){
+    const h=Math.max(0,Math.min(200,200*(1-st.vol/BMAX)));
+    const r=$("tBurLiq"); if(!r)return;
+    r.setAttribute("y",String(17+(200-h))); r.setAttribute("height",String(h));
+    r.style.opacity=st.filled?".85":"0";
+  }
   function refresh(){
-    $("tBeaker").style.background=st.flask?cur():"transparent";
-    $("tRead").textContent="الحجم المضاف: "+st.vol.toFixed(1)+" مل"+(st.flask?"  ·  pH ≈ "+pHAt(st.vol).toFixed(1):"");
+    const f=$("tFLiq"); if(f) f.setAttribute("fill",st.flask?cur():"#eef4fa");
+    burLevel();
+    $("tRead").textContent="الحجم المضاف: "+st.vol.toFixed(1)+" مل"+(st.flask&&st.ind?"  ·  pH ≈ "+pHAt(st.vol).toFixed(1):"");
   }
   function stepsList(){
-    const it=[["١) املا السحاحة بـ HCl",st.filled],["٢) ضع 10 مل Na₂CO₃ في الدورق",st.flask],["٣) اختار الكاشف",!!st.ind],["٤) ابدأ التنقيط",st.running||st.done]];
+    const it=[["١) املا السحاحة بـ HCl",st.filled],["٢) ضع 10 مل Na₂CO₃ في الدورق",st.flask],["٣) اختار الكاشف",!!st.ind],["٤) حط الدورق تحت السحاحة وابدأ التنقيط",st.running||st.done]];
     $("tSteps").innerHTML=it.map(([t,ok])=>'<div style="font-weight:'+(ok?700:400)+';color:'+(ok?"#2e7d32":"#16324f")+'">'+(ok?"✅ ":"⬜ ")+t+'</div>').join("");
   }
+  function setPlaced(p){ st.placed=p; const w=$("tFW"); if(w) w.className="tFlaskWrap"+(p?"":" away"); }
+  function drop(){ const d=$("tDrop"); d.classList.remove("fall"); void d.offsetWidth; d.classList.add("fall"); }
   function stop(auto){
     clearInterval(st.timer);st.timer=null;st.running=false;
-    if(auto){st.done=true;$("tMsg").textContent="🛑 اللون اتغيّر! اتوقفنا فوراً عند نقطة النهاية. الحجم المضاف: "+st.vol.toFixed(1)+" مل."}
-    else $("tMsg").textContent="وقفت التنقيط يدوياً عند "+st.vol.toFixed(1)+" مل.";
+    if(auto){st.done=true;st.endV=st.vol;$("tMsg").textContent="🛑 اللون اتغيّر! اتوقفنا فوراً عند نقطة النهاية. الحجم المضاف: "+st.vol.toFixed(1)+" مل.";$("tMsg").style.color="#2e7d32"}
+    else{$("tMsg").textContent="وقفت التنقيط يدوياً عند "+st.vol.toFixed(1)+" مل.";$("tMsg").style.color="#16324f"}
     render();
   }
   function start(){
-    st.running=true;st.last=cur();$("tMsg").textContent="بتنقّط HCl قطرة قطرة… لاحظ لون الدورق.";
+    st.running=true;st.last=cur();$("tMsg").textContent="بتنقّط HCl قطرة قطرة… لاحظ لون الدورق.";$("tMsg").style.color="#16324f";
     st.timer=setInterval(()=>{
-      st.vol=Math.round((st.vol+0.1)*10)/10;
+      st.vol=Math.min(BMAX,Math.round((st.vol+0.1)*10)/10);
+      drop();
       const c=cur();
       if(st.last!==null&&c!==st.last){stop(true);return}
       st.last=c;refresh();
-    },250);
+    },320);
     render();
   }
+  function btn(text,fn){const x=document.createElement("button");x.textContent=text;x.className="btn";x.style.margin="6px 0";x.onclick=fn;$("tCtl").appendChild(x);return x}
   function render(){
     $("tCtl").innerHTML="";stepsList();refresh();
-    if(!st.filled){btn("🧪 املا السحاحة بـ HCl",()=>{st.filled=true;$("tMsg").textContent="تمام، السحاحة اتملت بـ HCl.";render()});return}
-    if(!st.flask){btn("🧴 ضع 10 مل Na₂CO₃ في الدورق",()=>{st.flask=true;$("tMsg").textContent="الدورق فيه 10 مل Na₂CO₃ (قياسي).";render()});return}
+    if(!st.filled){btn("🧪 املا السحاحة بـ HCl",()=>{st.filled=true;$("tMsg").textContent="تمام، السحاحة اتملت بـ HCl وصفرها عند الصفر.";render()});return}
+    if(!st.flask){btn("🧴 ضع 10 مل Na₂CO₃ في الدورق",()=>{st.flask=true;$("tMsg").textContent="الدورق جاهز جنب السحاحة.";render()});return}
     if(!st.ind){
       $("tMsg").textContent="اختار الكاشف: ph.ph أو Methyl orange (M.O)";
-      btn("🟣 ph.ph (وردي ← عديم اللون)",()=>{st.ind="phph";$("tMsg").textContent="تمام، الكاشف ph.ph على الدورق.";render()});
-      btn("🟠 Methyl orange (أصفر ← أحمر)",()=>{st.ind="mo";$("tMsg").textContent="تمام، الكاشف M.O على الدورق.";render()});
+      btn("🟣 ph.ph (وردي ← عديم اللون)",()=>{st.ind="phph";$("tMsg").textContent="تمام، الكاشف ph.ph في الدورق.";render()});
+      btn("🟠 Methyl orange (أصفر ← أحمر)",()=>{st.ind="mo";$("tMsg").textContent="تمام، الكاشف M.O في الدورق.";render()});
       return;
     }
-    if(st.done){
-      const factor=st.ind==="phph"?2:1, n=(NSTD*VSTD*factor)/st.vol;
-      $("tCtl").insertAdjacentHTML("beforeend",'<div style="font-weight:700;color:#1f4e79;margin:8px 0">📊 النتيجة: عيارية HCl ≈ '+n.toFixed(3)+' N (الحجم عند نقطة النهاية: '+st.vol.toFixed(1)+' مل)</div>');
-      btn("🔁 ابدأ تجربة جديدة",()=>{Object.assign(st,{filled:false,flask:false,ind:null,vol:0,running:false,done:false,last:null});$("tMsg").textContent="";render()});
+    if(st.done){ renderResult(); return; }
+    if(!st.placed){
+      btn("⬇️ حط الدورق تحت السحاحة",()=>{setPlaced(true);$("tMsg").textContent="الدورق تحت السحاحة. افتح الحنفية وابدأ.";render()});
       return;
     }
     btn(st.running?"⏹ وقف":"🚰 افتح الحنفية وابدأ التنقيط",()=>{if(st.running)stop(false);else start()});
+    btn("⬆️ شيل الدورق",()=>{ if(st.running) stop(false); setPlaced(false);$("tMsg").textContent="الدورق اتشال، حطه تاني لما تكون جاهز.";render() });
   }
+  // ---------- تسجيل البيانات بعد المعايرة ----------
+  function renderResult(){
+    const factor=st.ind==="phph"?2:1;
+    const trueN=(NSTD*VSTD*factor)/st.endV;
+    const trueG=trueN*MW_HCL;
+    const truePct=trueG/10;
+    $("tCtl").innerHTML="";
+    $("tMsg").textContent="📝 سجّل بياناتك من التجربة، وبعدين اضغط تصحيح.";
+    $("tMsg").style.color="#16324f";
+    const res=$("tRes");
+    res.innerHTML='<div class="tForm">'
+      +'<div><label for="rV">حجم HCl عند نقطة النهاية (مل)</label><input id="rV" type="number" step="0.1" dir="ltr"></div>'
+      +'<div><label for="rN">عيارية HCl (N)</label><input id="rN" type="number" step="0.001" dir="ltr"></div>'
+      +'<div><label for="rG">تركيز HCl (جم/لتر) = N × 36.5</label><input id="rG" type="number" step="0.01" dir="ltr"></div>'
+      +'<div><label for="rP">النسبة المئوية (وزن/حجم %)</label><input id="rP" type="number" step="0.01" dir="ltr"></div>'
+      +'</div><div id="rOut" style="margin-top:10px;line-height:1.9"></div>';
+    btn("✅ صحّح بياناتي",()=>{
+      const v=parseFloat($("rV").value), n=parseFloat($("rN").value), g=parseFloat($("rG").value), p=parseFloat($("rP").value);
+      const ok=(x,t,tol)=>!isNaN(x)&&Math.abs(x-t)<=tol;
+      const rows=[
+        ["حجم HCl عند نقطة النهاية",ok(v,st.endV,0.3),st.endV.toFixed(1)+" مل"],
+        ["عيارية HCl",ok(n,trueN,0.01),trueN.toFixed(3)+" N"],
+        ["التركيز بالجرام/لتر",ok(g,trueG,0.5),trueG.toFixed(2)+" جم/لتر"],
+        ["النسبة المئوية (وزن/حجم)",ok(p,truePct,0.05),truePct.toFixed(2)+" %"]
+      ];
+      const score=rows.filter(r=>r[1]).length;
+      $("rOut").innerHTML=rows.map(r=>'<div style="color:'+(r[1]?"#2e7d32":"#b71c1c")+';font-weight:700">'+(r[1]?"✅":"❌")+" "+r[0]+(r[1]?"":" — الصح: "+r[2])+'</div>').join("")
+        +'<div style="margin-top:8px;font-weight:700;color:#1f4e79">الدرجة: '+score+' من '+rows.length+'</div>'
+        +'<div style="font-size:13px;opacity:.8;margin-top:4px">العيارية = (N قياسي × V قياسي × عامل) ÷ V المستهلك، وعامل ph.ph = 2 لأنه بيعطي نص الكمية.</div>';
+      const S=loadS(6); S.n=(S.n||0)+1; if(score===rows.length) S.ok=(S.ok||0)+1; saveS(6,S);
+    });
+    btn("🔁 ابدأ تجربة جديدة",()=>{Object.assign(st,{filled:false,flask:false,ind:null,vol:0,running:false,done:false,last:null,placed:false,endV:0});res.innerHTML="";setPlaced(false);$("tMsg").textContent="";render()});
+  }
+  setPlaced(false);
   render();
 }
+
 window.openLab=openLab;window.__labSalts=SALTS2.concat(SALTS1,SALTS3,SALTS4,SALTS5);
 })();
