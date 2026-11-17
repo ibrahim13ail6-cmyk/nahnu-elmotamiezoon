@@ -328,7 +328,8 @@ const SEC={
  4:{ic:"🔥",title:"السكشن الرابع: المنجنيز والكالسيوم والباريوم + اختبار اللهب",short:"السكشن الرابع",desc:"Mn²⁺ وCa²⁺ وBa²⁺ بكواشف NaOH وNH₄OH وK₂CrO₄، مع اختبار اللهب للصوديوم والبوتاسيوم والباريوم.",RG:RG5,SALTS:SALTS5,key:"_4",eq:1,
     intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول فيه أحد الكاتيونات (المنجنيز أو الكالسيوم أو الباريوم أو الصوديوم أو البوتاسيوم). جرّب الكواشف، واستعن باختبار اللهب 🔥 للتمييز بينها. أفرغ الأنبوبتين قبل كاشف جديد. دوّن ملاحظاتك في المفكرة، والمعادلات والتفسير يظهران بعد تسليم الإجابة.",ph:"اسم الملح أو الكاتيون، مثال: الباريوم"},
  5:{ic:"🧫",title:"السكشن الخامس (إضافي): كشف أملاح عامة",short:"السكشن الخامس",short:"السكشن الثالث",desc:"ملحان مجهولان من بنك أملاح متنوع (كلوريدات وكبريتات وأملاح الحديد والنحاس…) بستة كواشف.",RG:RG2,SALTS:SALTS2,key:"",
-    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول مختلف. جرّب الكواشف واحدًا بعد الآخر (أفرغ الأنبوبتين بين كل تجربة)، دوّن ملاحظاتك في المفكرة، ثم اكتب اسم كل ملح. سجل الملاحظات والمعادلات يظهر بعد تسليم الإجابة.",ph:"مثال: كلوريد الصوديوم"}
+    intro:"أمامك أنبوبتان: ملح أ وملح ب، وفي كل منهما ملح مجهول مختلف. جرّب الكواشف واحدًا بعد الآخر (أفرغ الأنبوبتين بين كل تجربة)، دوّن ملاحظاتك في المفكرة، ثم اكتب اسم كل ملح. سجل الملاحظات والمعادلات يظهر بعد تسليم الإجابة.",ph:"مثال: كلوريد الصوديوم"},
+ 6:{ic:"🧪",title:"السكشن السادس: المعايرة بالسحاحة (التحليل الحجمي)",short:"السكشن السادس",key:"_t6",desc:"املا السحاحة بـ HCl، وضع 10 مل Na₂CO₃ في الدورق مع الكاشف، ثم نقط لحد ما اللون يتغير: التنقيط بيقف لوحده عند نقطة النهاية، وبتحسب العيارية.",ph:"محاكاة المعايرة"}
 };
 const loadS=sec=>{try{return Object.assign({n:0,ok:0},JSON.parse(localStorage.getItem(SK()+SEC[sec].key)||"{}"))}catch(e){return{n:0,ok:0}}};
 const saveS=(sec,o)=>{try{localStorage.setItem(SK()+SEC[sec].key,JSON.stringify(o))}catch(e){}};
@@ -349,8 +350,8 @@ function histPage(){
 function openLab(){
  css();
  page(`<div class="lb"><h2>🧪 امتحانات في المعمل</h2><p class="lbp">اختر السكشن، وسيعطيك ملحًا مجهولًا لتكشف عنه بالتجارب ثم تكتب اسمه.</p>
-  ${[1,2,3,4,5].map(i=>{const S=loadS(i);return `<button class="lbsec" data-s="${i}"><span class="ic">${SEC[i].ic}</span><div><b>${SEC[i].title}</b><span>${SEC[i].desc}<br>نتيجتك: ${AR(S.ok)} من ${AR(S.n)}</span></div></button>`}).join("")}
-  <p class="lbleg" style="text-align:center">إصدار المعمل: ٥ سكاشن • ٣١/١٠/٢٠٢٦</p>
+  ${[1,2,3,4,5,6].map(i=>{const S=loadS(i);return `<button class="lbsec" data-s="${i}"><span class="ic">${SEC[i].ic}</span><div><b>${SEC[i].title}</b><span>${SEC[i].desc}<br>نتيجتك: ${AR(S.ok)} من ${AR(S.n)}</span></div></button>`}).join("")}
+  <p class="lbleg" style="text-align:center">إصدار المعمل: ٦ سكاشن • ٣١/١٠/٢٠٢٦</p>
   <button class="lbsec" id="lbhist"><span class="ic">📊</span><div><b>نتائجي المحفوظة</b><span>سجل محاولاتك ودرجاتك في المعمل</span></div></button></div>`,typeof subjects==="function"?subjects:null);
  document.querySelectorAll(".lbsec").forEach(b=>b.onclick=()=>start(+b.dataset.s));
  const hb=document.getElementById("lbhist");if(hb)hb.onclick=histPage;
@@ -359,6 +360,7 @@ function openLab(){
 
 /* ---------- صفحة الامتحان: أنبوبتان (ملح أ وملح ب) ---------- */
 function start(sec){
+ if(sec===6)return titrLab();
  css();
  const C=SEC[sec],RG=C.RG,L=C.SALTS;
  const pick=()=>{let a=L.slice().sort(()=>Math.random()-.5);return sec===1?a.slice(0,2):a.slice(0,2)};
@@ -479,6 +481,82 @@ function start(sec){
  $("lbok").onclick=check;[0,1].forEach(i=>$("lbin"+i).onkeydown=e=>{if(e.key==="Enter")check()});
  $("lbnx").onclick=()=>start(sec);
  window.scrollTo(0,0);
+}
+/* ---------- السكشن السادس: المعايرة بالسحاحة (محاكاة) ---------- */
+function titrLab(){
+  css();
+  const EP_PHPH=5, EP_MO=10, NSTD=0.1, VSTD=10;
+  const SVG='<svg viewBox="0 0 300 330" style="width:100%;max-width:300px;display:block;margin:0 auto">'
+    +'<rect x="110" y="6" width="46" height="14" rx="4" fill="#9aa5b1" stroke="#555"/>'
+    +'<rect x="118" y="20" width="30" height="236" rx="3" fill="#eef4fa" stroke="#4a5a6a" stroke-width="2"/>'
+    +'<rect x="119" y="150" width="28" height="105" fill="#90caf9" opacity=".55"/>'
+    +'<path d="M118 256 L128 282 L138 282 L148 256 Z" fill="#eef4fa" stroke="#4a5a6a" stroke-width="2"/>'
+    +'<rect x="128" y="282" width="10" height="16" fill="#4a5a6a"/>'
+    +'<rect x="50" y="262" width="60" height="10" rx="3" fill="#7f8c99" stroke="#333"/>'
+    +'<rect x="78" y="252" width="8" height="30" fill="#c62828"/>'
+    +'<text x="212" y="60" font-size="11" fill="#1f4e79">رأس السحاحة</text><line x1="164" y1="14" x2="208" y2="56" stroke="#1f4e79"/>'
+    +'<text x="212" y="130" font-size="11" fill="#1f4e79">المدرج (ml)</text><line x1="148" y1="120" x2="208" y2="126" stroke="#1f4e79"/>'
+    +'<text x="212" y="176" font-size="11" fill="#1f4e79">المحلول القياسي</text><line x1="148" y1="170" x2="208" y2="172" stroke="#1f4e79"/>'
+    +'<text x="212" y="226" font-size="11" fill="#1f4e79">الحنفية (Stopcock)</text><line x1="110" y1="266" x2="208" y2="230" stroke="#1f4e79"/>'
+    +'<text x="212" y="290" font-size="11" fill="#1f4e79">الفوهة (Tip)</text><line x1="146" y1="278" x2="208" y2="288" stroke="#1f4e79"/>'
+    +'</svg>';
+  page('<div class="lb"><h2>🧪 السكشن السادس: المعايرة بالسحاحة</h2>'
+    +'<p class="lbp">اتبع الخطوات: املا السحاحة، ضع المادة والكاشف في الدورق، ثم نقط. التنقيط بيقف لوحده أول ما اللون يتغير.</p>'
+    +'<div id="tSteps" class="lbp"></div>'
+    +'<div style="background:#fff;border:1px solid #cfe0ee;border-radius:12px;padding:12px;text-align:center">'+SVG
+    +'<div id="tBeaker" style="width:130px;height:130px;margin:8px auto;border:3px solid #4a5a6a;border-top:none;border-radius:0 0 24px 24px;transition:background .3s"></div>'
+    +'<div id="tRead" style="font-weight:700;color:#1f4e79;margin-top:6px;line-height:1.9"></div></div>'
+    +'<div id="tMsg" style="min-height:2.8em;font-weight:700;line-height:1.8"></div>'
+    +'<div id="tCtl"></div></div>', openLab);
+  const $=id=>document.getElementById(id);
+  const st={filled:false,flask:false,ind:null,vol:0,running:false,done:false,last:null,timer:null};
+  const pHAt=v=>v<=EP_PHPH?11.5-(11.5-8.3)*(v/EP_PHPH):v<=EP_MO?8.3-(8.3-3.8)*((v-EP_PHPH)/(EP_MO-EP_PHPH)):Math.max(2.5,3.8-(v-EP_MO)*0.5);
+  const colorOf=(ind,p)=>ind==="phph"?(p>8.3?"#f48fb1":"#eef4fa"):(p>4.4?"#ffe066":p>3.1?"#ff9800":"#e53935");
+  const cur=()=>st.flask&&st.ind?colorOf(st.ind,pHAt(st.vol)):"#eef4fa";
+  const btn=(text,fn)=>{const x=document.createElement("button");x.textContent=text;x.className="btn";x.style.margin="6px 0";x.onclick=fn;$("tCtl").appendChild(x);return x};
+  function refresh(){
+    $("tBeaker").style.background=st.flask?cur():"transparent";
+    $("tRead").textContent="الحجم المضاف: "+st.vol.toFixed(1)+" مل"+(st.flask?"  ·  pH ≈ "+pHAt(st.vol).toFixed(1):"");
+  }
+  function stepsList(){
+    const it=[["١) املا السحاحة بـ HCl",st.filled],["٢) ضع 10 مل Na₂CO₃ في الدورق",st.flask],["٣) اختار الكاشف",!!st.ind],["٤) ابدأ التنقيط",st.running||st.done]];
+    $("tSteps").innerHTML=it.map(([t,ok])=>'<div style="font-weight:'+(ok?700:400)+';color:'+(ok?"#2e7d32":"#16324f")+'">'+(ok?"✅ ":"⬜ ")+t+'</div>').join("");
+  }
+  function stop(auto){
+    clearInterval(st.timer);st.timer=null;st.running=false;
+    if(auto){st.done=true;$("tMsg").textContent="🛑 اللون اتغيّر! اتوقفنا فوراً عند نقطة النهاية. الحجم المضاف: "+st.vol.toFixed(1)+" مل."}
+    else $("tMsg").textContent="وقفت التنقيط يدوياً عند "+st.vol.toFixed(1)+" مل.";
+    render();
+  }
+  function start(){
+    st.running=true;st.last=cur();$("tMsg").textContent="بتنقّط HCl قطرة قطرة… لاحظ لون الدورق.";
+    st.timer=setInterval(()=>{
+      st.vol=Math.round((st.vol+0.1)*10)/10;
+      const c=cur();
+      if(st.last!==null&&c!==st.last){stop(true);return}
+      st.last=c;refresh();
+    },250);
+    render();
+  }
+  function render(){
+    $("tCtl").innerHTML="";stepsList();refresh();
+    if(!st.filled){btn("🧪 املا السحاحة بـ HCl",()=>{st.filled=true;$("tMsg").textContent="تمام، السحاحة اتملت بـ HCl.";render()});return}
+    if(!st.flask){btn("🧴 ضع 10 مل Na₂CO₃ في الدورق",()=>{st.flask=true;$("tMsg").textContent="الدورق فيه 10 مل Na₂CO₃ (قياسي).";render()});return}
+    if(!st.ind){
+      $("tMsg").textContent="اختار الكاشف: ph.ph أو Methyl orange (M.O)";
+      btn("🟣 ph.ph (وردي ← عديم اللون)",()=>{st.ind="phph";$("tMsg").textContent="تمام، الكاشف ph.ph على الدورق.";render()});
+      btn("🟠 Methyl orange (أصفر ← أحمر)",()=>{st.ind="mo";$("tMsg").textContent="تمام، الكاشف M.O على الدورق.";render()});
+      return;
+    }
+    if(st.done){
+      const factor=st.ind==="phph"?2:1, n=(NSTD*VSTD*factor)/st.vol;
+      $("tCtl").insertAdjacentHTML("beforeend",'<div style="font-weight:700;color:#1f4e79;margin:8px 0">📊 النتيجة: عيارية HCl ≈ '+n.toFixed(3)+' N (الحجم عند نقطة النهاية: '+st.vol.toFixed(1)+' مل)</div>');
+      btn("🔁 ابدأ تجربة جديدة",()=>{Object.assign(st,{filled:false,flask:false,ind:null,vol:0,running:false,done:false,last:null});$("tMsg").textContent="";render()});
+      return;
+    }
+    btn(st.running?"⏹ وقف":"🚰 افتح الحنفية وابدأ التنقيط",()=>{if(st.running)stop(false);else start()});
+  }
+  render();
 }
 window.openLab=openLab;window.__labSalts=SALTS2.concat(SALTS1,SALTS3,SALTS4,SALTS5);
 })();
