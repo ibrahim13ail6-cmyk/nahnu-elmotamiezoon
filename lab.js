@@ -581,26 +581,34 @@ function titrLab(){
       if(st.last!==null&&c!==st.last){stop(true);return}
       st.last=c;refresh();
     },320);
-    render();
   }
   function btn(text,fn){const x=document.createElement("button");x.textContent=text;x.className="btn";x.style.margin="6px 0";x.onclick=fn;$("tCtl").appendChild(x);return x}
   function render(){
-    $("tCtl").innerHTML="";stepsList();refresh();
-    if(!st.filled){btn("🧪 املا السحاحة بـ HCl",()=>{st.filled=true;$("tMsg").textContent="تمام، السحاحة اتملت بـ HCl وصفرها عند الصفر.";render()});return}
-    if(!st.flask){btn("🧴 ضع 10 مل Na₂CO₃ في الدورق",()=>{st.flask=true;$("tMsg").textContent="الدورق جاهز جنب السحاحة.";render()});return}
-    if(!st.ind){
-      $("tMsg").textContent="اختار الكاشف: ph.ph أو Methyl orange (M.O)";
-      btn("🟣 ph.ph (وردي ← عديم اللون)",()=>{st.ind="phph";$("tMsg").textContent="تمام، الكاشف ph.ph في الدورق.";render()});
-      btn("🟠 Methyl orange (أصفر ← أحمر)",()=>{st.ind="mo";$("tMsg").textContent="تمام، الكاشف M.O في الدورق.";render()});
-      return;
-    }
+    $("tCtl").innerHTML="";refresh();
     if(st.done){ renderResult(); return; }
-    if(!st.placed){
-      btn("⬇️ حط الدورق تحت السحاحة",()=>{setPlaced(true);$("tMsg").textContent="الدورق تحت السحاحة. افتح الحنفية وابدأ.";render()});
-      return;
-    }
-    btn(st.running?"⏹ وقف":"🚰 افتح الحنفية وابدأ التنقيط",()=>{if(st.running)stop(false);else start()});
-    btn("⬆️ شيل الدورق",()=>{ if(st.running) stop(false); setPlaced(false);$("tMsg").textContent="الدورق اتشال، حطه تاني لما تكون جاهز.";render() });
+    const box=document.createElement("div");box.className="tTools";box.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px";
+    $("tCtl").appendChild(box);
+    const mkb=(text,fn,dis)=>{const x=document.createElement("button");x.textContent=text;x.className="btn";x.style.cssText="margin:0;padding:10px;font-size:14px";x.disabled=!!dis;x.onclick=fn;box.appendChild(x);return x};
+    // 1) السحاحة
+    mkb(st.filled?"💧 فرّغ السحاحة":"🧪 املا السحاحة بـ HCl",()=>{st.filled=!st.filled;$("tMsg").textContent=st.filled?"السحاحة مليانة HCl.":"السحاحة اتفرغت.";render()});
+    // 2) الدورق والمادة
+    mkb(st.flask?"🧴 شيل المادة من الدورق":"🧴 ضع 10 مل Na₂CO₃ في الدورق",()=>{st.flask=!st.flask;if(!st.flask){setPlaced(false);st.ind=null}$("tMsg").textContent=st.flask?"المادة في الدورق.":"اتشالت المادة من الدورق.";render()});
+    // 3) الكواشف
+    mkb("🟣 ph.ph"+(st.ind==="phph"?" ✓":""),()=>{if(!st.flask){$("tMsg").textContent="ضع المادة في الدورق الأول.";return}st.ind="phph";$("tMsg").textContent="الكاشف ph.ph في الدورق.";render()},!st.flask);
+    mkb("🟠 Methyl orange"+(st.ind==="mo"?" ✓":""),()=>{if(!st.flask){$("tMsg").textContent="ضع المادة في الدورق الأول.";return}st.ind="mo";$("tMsg").textContent="الكاشف M.O في الدورق.";render()},!st.flask);
+    // 4) الدورق تحت السحاحة
+    mkb(st.placed?"⬆️ رجّع الدورق لجنب":"⬇️ حط الدورق تحت السحاحة",()=>{setPlaced(!st.placed);$("tMsg").textContent=st.placed?"الدورق تحت السحاحة.":"الدورق رجع لجنب.";render()},!st.flask);
+    // 5) الحنفية: بتنقّط وانت ماسك الزرار
+    const tap=mkb("🚰 الحنفية (اضغط مطولاً للتنقيط)",()=>{},!(st.filled&&st.flask&&st.ind&&st.placed));
+    tap.style.gridColumn="1 / span 2";tap.style.padding="16px";tap.style.fontWeight="700";
+    const down=e=>{e.preventDefault();if(!st.running&&!st.done)start()};
+    const up=()=>{if(st.running)stop(false)};
+    tap.addEventListener("pointerdown",down);
+    tap.addEventListener("pointerup",up);
+    tap.addEventListener("pointerleave",up);
+    tap.addEventListener("pointercancel",up);
+    // 6) إعادة
+    mkb("🔄 ابدأ من الأول",()=>{Object.assign(st,{filled:false,flask:false,ind:null,vol:0,running:false,done:false,last:null,placed:false,endV:0});setPlaced(false);$("tMsg").textContent="";$("tRes").innerHTML="";render()});
   }
   // ---------- تسجيل البيانات بعد المعايرة ----------
   function renderResult(){
